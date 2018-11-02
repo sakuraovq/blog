@@ -51,6 +51,7 @@ curl -L https://github.com/docker/machine/releases/download/v0.14.0/docker-machi
 docker-machine create --driver virtualbox  cluster-master1
 ```
 >* 报错提示没有发现VBoxManage。因此，需要手工安装
+
 ![Alt text](https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/docker-machine-err.png "docker-machine error")
 
 >* 编辑yum 源
@@ -73,6 +74,7 @@ yum  install  VirtualBox
 ```
 
 > * 还有可能出现报错内核不一致
+
 ![Alt text](https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/docker-machine-cpu.png	
  "docker-machine ")
 > * 根据提示下载指定的版本
@@ -83,6 +85,7 @@ vboxconfig  #重新加载执行下，再次创建
 ```
 >* 继续报错，没有开启虚拟化，云服务器默认是不能开启的，云服务器有云服务器的驱动，目前阿里云、华为云有这种驱动，同时比如阿里云的驱动是可以在腾讯云使用，也可以在本地
 使用，这个不造成影响。
+
 ![Alt text](https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/docker-machine-esc_err.png "docker-machine ")
 
 >* 第三方驱动支持列表
@@ -111,6 +114,7 @@ vboxconfig  #重新加载执行下，再次创建
     2、设置accesskey，要具备操作账户的权限
 ### 阿里云驱动安装
  >* 登录阿里云账号控制台https://home.console.aliyun.com/new#/，选择accesskey
+ 
    ![Alt text](https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/docker-machine-ali_login.png	
  "docker-machine-ali_login ") 
 ```sh
