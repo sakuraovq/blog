@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2018/10/31/应用程序API约定/">
+    
+    
+    <title>Api约束 | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="api">
+    <meta name="description" content="通用约定 所有编码都采用UTF-8 日期格式采用yyyy-MM-dd方式，如2015-08-10 Content-type为application/json; charset=UTF-8  公共请求头   头域（Header） 是否必须 说明     Authorization 必须 包含Access Key与请求签名   Host 必须 包含API的域名   Content-Type 可选 ap">
+<meta name="keywords" content="api">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Api约束">
+<meta property="og:url" content="https://www.sakuraus.cn/2018/10/31/应用程序API约定/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="通用约定 所有编码都采用UTF-8 日期格式采用yyyy-MM-dd方式，如2015-08-10 Content-type为application/json; charset=UTF-8  公共请求头   头域（Header） 是否必须 说明     Authorization 必须 包含Access Key与请求签名   Host 必须 包含API的域名   Content-Type 可选 ap">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-19T06:39:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Api约束">
+<meta name="twitter:description" content="通用约定 所有编码都采用UTF-8 日期格式采用yyyy-MM-dd方式，如2015-08-10 Content-type为application/json; charset=UTF-8  公共请求头   头域（Header） 是否必须 说明     Authorization 必须 包含Access Key与请求签名   Host 必须 包含API的域名   Content-Type 可选 ap">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanyinjiang" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Api约束</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Api约束</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-10-31T13:13:31.221Z" itemprop="datePublished" class="page-time">
+  2018-10-31
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Api/">Api</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#通用约定"><span class="post-toc-number">1.</span> <span class="post-toc-text">通用约定</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#公共请求头"><span class="post-toc-number">2.</span> <span class="post-toc-text">公共请求头</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#公共响应头"><span class="post-toc-number">3.</span> <span class="post-toc-text">公共响应头</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#响应状态码"><span class="post-toc-number">4.</span> <span class="post-toc-text">响应状态码</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#通用错误返回格式"><span class="post-toc-number">5.</span> <span class="post-toc-text">通用错误返回格式</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#消息体定义"><span class="post-toc-number">6.</span> <span class="post-toc-text">消息体定义</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#公共错误码"><span class="post-toc-number">7.</span> <span class="post-toc-text">公共错误码</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#签名认证"><span class="post-toc-number">8.</span> <span class="post-toc-text">签名认证</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#第三方接口认证-AccessKeyId-AccessKeySecret-模型"><span class="post-toc-number">8.1.</span> <span class="post-toc-text">第三方接口认证 AccessKeyId/AccessKeySecret 模型</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JWT模型"><span class="post-toc-number">8.2.</span> <span class="post-toc-text">JWT模型</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#令牌提交方式"><span class="post-toc-number">8.3.</span> <span class="post-toc-text">令牌提交方式</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#接口跨域问题"><span class="post-toc-number">9.</span> <span class="post-toc-text">接口跨域问题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#接口权限问题"><span class="post-toc-number">10.</span> <span class="post-toc-text">接口权限问题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#接口日志和限流问题"><span class="post-toc-number">11.</span> <span class="post-toc-text">接口日志和限流问题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#版本"><span class="post-toc-number">12.</span> <span class="post-toc-text">版本</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#接口设计"><span class="post-toc-number">13.</span> <span class="post-toc-text">接口设计</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#名称"><span class="post-toc-number">13.1.</span> <span class="post-toc-text">名称</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#协议"><span class="post-toc-number">13.2.</span> <span class="post-toc-text">协议</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#method"><span class="post-toc-number">13.3.</span> <span class="post-toc-text">method</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#接口通用参数"><span class="post-toc-number">13.4.</span> <span class="post-toc-text">接口通用参数</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-应用程序API约定" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Api约束</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-10-31 21:13:31" datetime="2018-10-31T13:13:31.221Z" itemprop="datePublished">2018-10-31</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Api/">Api</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="通用约定"><a href="#通用约定" class="headerlink" title="通用约定"></a>通用约定</h2><ul>
+<li>所有编码都采用UTF-8</li>
+<li>日期格式采用yyyy-MM-dd方式，如2015-08-10</li>
+<li>Content-type为application/json; charset=UTF-8</li>
+</ul>
+<h2 id="公共请求头"><a href="#公共请求头" class="headerlink" title="公共请求头"></a>公共请求头</h2><table>
+<thead>
+<tr>
+<th>头域（Header）</th>
+<th>是否必须</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>必须</td>
+<td>包含Access Key与请求签名</td>
+</tr>
+<tr>
+<td>Host</td>
+<td>必须</td>
+<td>包含API的域名</td>
+</tr>
+<tr>
+<td>Content-Type</td>
+<td>可选</td>
+<td>application/json; charset=utf-8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="公共响应头"><a href="#公共响应头" class="headerlink" title="公共响应头"></a>公共响应头</h2><table>
+<thead>
+<tr>
+<th>头域(Header)</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Content-Type</td>
+<td>只支持JSON格式，application/json; charset=utf-8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h2><p>可使用 HTTP Status Codes <a href="https://tools.ietf.org/html/rfc7231#section-6" target="_blank" rel="noopener">RFC7231</a>，同时使用消息自定义的code来做业务处理</p>
+<h2 id="通用错误返回格式"><a href="#通用错误返回格式" class="headerlink" title="通用错误返回格式"></a>通用错误返回格式</h2><p>当调用接口出错时，将返回通用的错误格式返回的消息体将包括全局唯一的请求、错误代码以及错误信息。调用方可根据错误码以及错误信息,requestid以便于快速地帮助您解决问题定位问题。</p>
+<h2 id="消息体定义"><a href="#消息体定义" class="headerlink" title="消息体定义"></a>消息体定义</h2><table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request_id</td>
+<td>String</td>
+<td>请求的唯一标识</td>
+</tr>
+<tr>
+<td>code</td>
+<td>String</td>
+<td>错误类型代码</td>
+</tr>
+<tr>
+<td>message</td>
+<td>String</td>
+<td>错误的信息说明</td>
+</tr>
+</tbody>
+</table>
+<h2 id="公共错误码"><a href="#公共错误码" class="headerlink" title="公共错误码"></a>公共错误码</h2><p>每个项目组定义自己的业务code<br>建议以1000开始，定义code的主要意义是看==客户端是否需要根据code来区分这个错误==</p>
+<h2 id="签名认证"><a href="#签名认证" class="headerlink" title="签名认证"></a>签名认证</h2><h3 id="第三方接口认证-AccessKeyId-AccessKeySecret-模型"><a href="#第三方接口认证-AccessKeyId-AccessKeySecret-模型" class="headerlink" title="第三方接口认证 AccessKeyId/AccessKeySecret 模型"></a>第三方接口认证 AccessKeyId/AccessKeySecret 模型</h3><p>AccessKeyId用于标示用户<br>AccessKeySecret是用户用于加密签名字符串</p>
+<p>签名规则</p>
+<p>所有请求字符串排序 + timestamp + uniq_nonce</p>
+<p>timestatmp +-15分钟有效  uniq_nonce +-15 分钟只能使用一次</p>
+<p>能防止重放和篡改，但是客户端密钥保存是个问题，特别是web端</p>
+<p>临时token，可以解决sk泄露问题</p>
+<h3 id="JWT模型"><a href="#JWT模型" class="headerlink" title="JWT模型"></a>JWT模型</h3><p>注意点：</p>
+<ol>
+<li>不能防止重放和篡改攻击</li>
+<li>后台需要减少令牌的授权时间，实现客户端无感自动更新令牌</li>
+<li>后台需要实现废弃令牌机制，比如用户更改密码，应该废弃以前所发的令牌</li>
+</ol>
+<h3 id="令牌提交方式"><a href="#令牌提交方式" class="headerlink" title="令牌提交方式"></a>令牌提交方式</h3><ol>
+<li>Head  Authorization:token</li>
+<li>url   url&amp;authorization=token</li>
+</ol>
+<h2 id="接口跨域问题"><a href="#接口跨域问题" class="headerlink" title="接口跨域问题"></a>接口跨域问题</h2><p>CORS 授权解决跨域问题<br>子域名可以通过设置 document.domain=parent.com 来取消跨域</p>
+<h2 id="接口权限问题"><a href="#接口权限问题" class="headerlink" title="接口权限问题"></a>接口权限问题</h2><p>统一使用RBAC</p>
+<h2 id="接口日志和限流问题"><a href="#接口日志和限流问题" class="headerlink" title="接口日志和限流问题"></a>接口日志和限流问题</h2><p>在接入层做拦截，实现限流和日志记录</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>通过url来区分</p>
+<p>/v1/order/xxx</p>
+<p>/v2/order/xxx</p>
+<h2 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h2><h3 id="名称"><a href="#名称" class="headerlink" title="名称"></a>名称</h3><p>要求清晰，明了<br>/v1/order/crete<br>/v1/order/updateStatus</p>
+<h3 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h3><p>使用HTTPS</p>
+<h3 id="method"><a href="#method" class="headerlink" title="method"></a>method</h3><p>只使用GET,POST, GET 用于查询，其他都用POST</p>
+<h3 id="接口通用参数"><a href="#接口通用参数" class="headerlink" title="接口通用参数"></a>接口通用参数</h3><p>字段过滤  field=id,firstname<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;id&quot;: &quot;543abc&quot;,</span><br><span class="line">    &quot;first_name:&quot;: &quot;John&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;id&quot;: &quot;543add&quot;,</span><br><span class="line">    &quot;first_name:&quot;: &quot;Bob&quot;</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>条件过滤   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">是否关联资源 embed=orderitem  表示包含订单明细</span><br></pre></td></tr></table></figure></p>
+<p>[<br>  {<br>      “order_id”:’111’,<br>      “orderitem”: {<br>           ‘food_name’:’test’<br>      }<br>  }<br>]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">排序  ```sort=username,-updated_at```	 - 降序</span><br><span class="line"></span><br><span class="line">分页  ``` page=0&amp;size=15 ```    //第一页 15条</span><br><span class="line"></span><br><span class="line">分页返回 data</span><br></pre></td></tr></table></figure></p>
+<p>{<br>   ‘count’ =&gt; ‘11’,<br>   ‘cur_page’=&gt; 1,<br>   ‘data’ =&gt; {…}<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">经常使用的、复杂的查询标签化，降低维护成本。</span><br><span class="line"></span><br><span class="line">``` GET /trades?status=closed&amp;sort=created,desc</span><br></pre></td></tr></table></figure></p>
+<p>缩写 <code>GET /trades#recently-closed</code></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-08-19T06:39:45.000Z" itemprop="dateUpdated">2018-08-19 14:39:45</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2018/10/31/应用程序API约定/" target="_blank" rel="external">https://www.sakuraus.cn/2018/10/31/应用程序API约定/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/">api</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/&title=《Api约束》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/&title=《Api约束》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/10/31/应用程序API约定/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Api约束》 — don't be evil&url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/10/31/应用发版规范/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">镜像发布</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/10/31/数据库规范/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Mysql规范</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ありがとうございます
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号-1</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/&title=《Api约束》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/&title=《Api约束》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/10/31/应用程序API约定/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Api约束》 — don't be evil&url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/10/31/应用程序API约定/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACMUlEQVR42u3a0Y6jMAwF0P7/T3elfa0K9ybMzmJOnqoBmhwqeZzYr1c83n/H5+dvVz/vOb76/hivnxgYGBi3ZbwPR7vQhHr8ncd//zo7BgbGAxh5kE2C43Fgbe9JXhMGBgZGvvQ8BOevDAMDA6MNuN/C5c4WNElJMTAwMJJNbH5Psn39tb04BgbGDRk7hYGf/vyP6hsYGBj/MeN90cjDa572FbNjYGCMZuxsPtuGif1C6ckKMTAwhjKSW/MNZ95m0eZ4J68SAwNjNKPdWObIpAi61l4W1TcwMDAGMda+qG0IWwvrRfKKgYExmtG2VuTP7qePbVMaBgbGVMZacTFZ3H7jRf6yMDAwZjN2mh7awLq23KKYgYGBMZTRTr92Z17ObJPFVx7dMTAwbs5oj96So7F9arEGDAyM0Yy2DNmecbUpZnsIGFUkMDAwbs5oWyXaI7Dj8JoUOy/+HTAwMG7IaBO7tmzZNk+0s5+EYAwMjBGM/EhrJwiuFTvzkicGBsZsRjJxcqyfXG2X3qaVGBgYsxk7wS4vT+ZPrR3MYWBgPI2RB8q1q/mmt3gdGBgYoxl5MM1LC3li1x76Y2BgPI3xLkd74LUGaBNKDAyM2YxruxfWAmj+nwEDA+PJjPaALG+/aLfEeQXjJLfFwMAYythZVp5E7oTjEx4GBgZGWQzIv3O/OQMDAwMjL0+27RFrKSMGBsaTGVclefn0F7eOYWBgjGbsFAaSdoq1ImX7LAYGxlDGH/Yb5POEE+ygAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

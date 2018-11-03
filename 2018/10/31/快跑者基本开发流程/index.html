@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2018/10/31/快跑者基本开发流程/">
+    
+    
+    <title>开发流程 | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="code">
+    <meta name="description" content="新的功能模块基本开发流程 首先，应该熟悉业务需求，了解功能逻辑，明确接口应该接受什么参数，进行什么处理以及返回什么结果  确定具体的业务逻辑，发现未知的逻辑漏洞，避免开发到一半的时候才发现逻辑上有问题  基于以下 demo 开发接口代码   Controller method demo: 12345678910111213141516171819202122public function api(">
+<meta name="keywords" content="code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开发流程">
+<meta property="og:url" content="https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="新的功能模块基本开发流程 首先，应该熟悉业务需求，了解功能逻辑，明确接口应该接受什么参数，进行什么处理以及返回什么结果  确定具体的业务逻辑，发现未知的逻辑漏洞，避免开发到一半的时候才发现逻辑上有问题  基于以下 demo 开发接口代码   Controller method demo: 12345678910111213141516171819202122public function api(">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-19T06:39:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="开发流程">
+<meta name="twitter:description" content="新的功能模块基本开发流程 首先，应该熟悉业务需求，了解功能逻辑，明确接口应该接受什么参数，进行什么处理以及返回什么结果  确定具体的业务逻辑，发现未知的逻辑漏洞，避免开发到一半的时候才发现逻辑上有问题  基于以下 demo 开发接口代码   Controller method demo: 12345678910111213141516171819202122public function api(">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanyinjiang" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">开发流程</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">开发流程</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-10-31T13:13:30.015Z" itemprop="datePublished" class="page-time">
+  2018-10-31
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/php/">php</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#新的功能模块基本开发流程"><span class="post-toc-number">1.</span> <span class="post-toc-text">新的功能模块基本开发流程</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-快跑者基本开发流程" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">开发流程</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-10-31 21:13:30" datetime="2018-10-31T13:13:30.015Z" itemprop="datePublished">2018-10-31</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/php/">php</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="新的功能模块基本开发流程"><a href="#新的功能模块基本开发流程" class="headerlink" title="新的功能模块基本开发流程"></a>新的功能模块基本开发流程</h2><ol>
+<li><p>首先，应该熟悉业务需求，了解功能逻辑，明确接口应该接受什么参数，进行什么处理以及返回什么结果</p>
+</li>
+<li><p>确定具体的业务逻辑，发现未知的逻辑漏洞，避免开发到一半的时候才发现逻辑上有问题</p>
+</li>
+<li><p>基于以下 demo 开发接口代码</p>
+</li>
+</ol>
+<p><strong>Controller method demo:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public function api()</span><br><span class="line">&#123;</span><br><span class="line">	// Stop one：判断接口调用权限</span><br><span class="line">	$this-&gt;checkAuthorization($this-&gt;tokenInfo, [UserModel::LOGIN_ADMIN]);</span><br><span class="line"></span><br><span class="line">	// Step two: 获取所有请求的参数</span><br><span class="line">	$param1 = I(&apos;get.param1&apos;, &apos;&apos;);</span><br><span class="line">	$param2 = I(&apos;get.param2&apos;, &apos;&apos;);</span><br><span class="line"></span><br><span class="line">	// Step three: 验证获取到的参数（取值是否正确）</span><br><span class="line">	if ($param1 &lt;= 0) &#123;</span><br><span class="line">		apiResponse(CodeModel::ERROR, &apos;param1 参数异常&apos;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// Step four: 判断权限（比如判断商户和团队是否关联）</span><br><span class="line"></span><br><span class="line">	// Step five: 进行具体的业务逻辑处理（一般会在相应的 Service 中创建一个同名方法进行处理）并返回结果（一般是 Resuful 风格的数据格式）</span><br><span class="line"></span><br><span class="line">	// Step six: 解析返回结果（因为前端需要对返回数据进行一些处理，一般调用 *View::parse*()）</span><br><span class="line"></span><br><span class="line">	// Step serven: 返回最终结果</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Service method demo:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static function api()</span><br><span class="line">&#123;</span><br><span class="line">	// 进行具体的业务逻辑处理</span><br><span class="line"></span><br><span class="line">	// 注意：几乎所有数据都进行了缓存，因此如果数据库字段发生变更需要清除之前的缓存</span><br><span class="line"></span><br><span class="line">	// 一般以 get 开头的方法表示获取数据，以 set/update/modify 等开头的表示更新数据</span><br><span class="line">	// 在编写新的功能方法之前，要先看看是否已经存在相同功能的方法</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li><p>代码编写完成之后，要先自己 review 一遍，检测代码逻辑、格式是否存在问题</p>
+</li>
+<li><p>检查完毕之后，自己<strong>测试</strong>一下接口是否实现目的（返回正确结果和返回错误结果）</p>
+</li>
+<li><p><code>Ctrl + Alt + L</code>，格式化一下代码（html,js 代码不用格式化）</p>
+</li>
+<li><p>提交代码，编辑合适的注释，推送到远端，找其他人 review code.</p>
+</li>
+</ol>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-08-19T06:39:45.000Z" itemprop="dateUpdated">2018-08-19 14:39:45</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2018/10/31/快跑者基本开发流程/" target="_blank" rel="external">https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/code/">code</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/&title=《开发流程》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/&title=《开发流程》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《开发流程》 — don't be evil&url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/10/31/数据库规范/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">Mysql规范</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/10/31/代码日志记录指南/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">日志记录</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ありがとうございます
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号-1</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/&title=《开发流程》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/&title=《开发流程》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《开发流程》 — don't be evil&url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/10/31/快跑者基本开发流程/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACsklEQVR42u3aQXIiMRAEQP//094P7OCqbgnjiOREEKBR6iCJ6v76il/fD6+n77z+5Gn8fJzDLzw8PLxDU396QM57In0Hryd2Pmc8PDy827xks8438adJvN63Z/P5wYKHh4f3Abxo0PhXyRLg4eHh/XVessXPLt/tgYSHh4f3u7w8FEi29VPhQhL1Hsta8PDw8GJeXkX6nPdX6nt4eHh466p6fi2eHQ+b4yeaLR4eHt4FXr7h5oxZcWsT3f4Qc+Dh4eEd5bWbbF7QShao3fpfL9l/5omHh4f3Fl5eGMsnmhwe+VOK7+Dh4eFd4LWX2vbB+aJsymB5mxceHh7enjdbiTaozT/Jlzi6yuPh4eFd4CWwWUSbTCiPjFetV3h4eHjXeO1f+tlVOP+8XZrHxcXDw8M7ypsFBG3RaxN8tKW1Im/Gw8PDW/PyCe2PhNn7uqEBDw8P7xovv/LOGMlU8mi4yGnx8PDwLvM2W/M+8M0XsQhQ8PDw8C7wEmoyxKxBatbEMCyt4eHh4V3j1d2soxHyA2BzgOHh4eHd4CUX2XbTnzWzJox6TDw8PLwLvGSItrQ/a0TIw478sMHDw8N7D68NYfMr7z6oHUa6eHh4eEd5s7aAvLS/bx1oG8Xw8PDwbvPa0v6sGSs/HjYX7ihxwcPDwzvKm2HyC+4sui0YeVcCHh4e3lFekl5sAov2ENoUyfDw8PDeyZtt0PmxkW/u0db/+ld4eHh4R3mzaCB/QLtwbSGtSFnw8PDwDvFm023Di/abbaGrPWzw8PDw9ry2LWDWEHCqLaA+GPDw8PCu8WZhRH5Rzlu12hgiOhjw8PDwfpXXxgezMdvfPj4XDw8P7yN5beCbRBWzptUDV2o8PDy8mJdcfNumqNmlfNZohYeHh/dO3uwP/6nr9WyiB2p6eHh4eBPeP90Jc6jZqMs+AAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
