@@ -78,4 +78,6 @@ theme: indigo
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: fanyinjiang
+  repo: git@github.com:fanyinjiang/blog.git
+  branch: master
