@@ -1,0 +1,78 @@
+commit 2370ea1a5e73ae7d87f50dffd76827afef853dc0
+Author: OvO <sakuraovq@gmail.com>
+Date:   Sat Nov 3 14:16:07 2018 +0800
+
+    Update _config.yml
+
+commit 96be15a2af4abff9a378827bc6e94e69c8a7c7b4
+Author: OvO <sakuraovq@gmail.com>
+Date:   Sat Nov 3 14:14:03 2018 +0800
+
+    Update _config.yml
+
+commit c822333beeadfea07193643adf6d48f99e567cbf
+Author: OvO <sakuraovq@gmail.com>
+Date:   Sat Nov 3 14:07:20 2018 +0800
+
+    Update footer.ejs
+
+commit ab068868287cf9575acc808e1172f2ce4d78e2e0
+Author: OvO <sakuraovq@gmail.com>
+Date:   Fri Nov 2 17:12:08 2018 +0800
+
+    Update _config.yml
+
+commit bde69ccf8636e05509a539fca30b6cc06eb0aae4
+Author: OvO <sakuraovq@gmail.com>
+Date:   Fri Nov 2 16:44:46 2018 +0800
+
+    Add files via upload
+
+commit 48ac9904e81e2a6618f12b0ba9b1b8f95423ff00
+Author: OvO <sakuraovq@gmail.com>
+Date:   Fri Nov 2 16:41:41 2018 +0800
+
+    Add files via upload
+
+commit 442b8d7db4b96d39e679451005a2a8003eb4bde1
+Author: OvO <1757510543@qq.com>
+Date:   Fri Nov 2 15:18:12 2018 +0800
+
+    Update README.md
+
+commit 99e288cbe92fb4a5fbb09059651d2bbc57907562
+Author: fanyinjiang <1757510543@qq.com>
+Date:   Fri Nov 2 14:30:30 2018 +0800
+
+    回复
+
+commit 1ddf1d3ad92c18a135f1ff09e004be7cd5086350
+Author: fanyinjiang <1757510543@qq.com>
+Date:   Fri Nov 2 14:29:32 2018 +0800
+
+    test del
+
+commit 04ba97afcab807685921b1134334ed9c2b38141c
+Merge: 5a72f0f d0673f4
+Author: fanyinjiang <1757510543@qq.com>
+Date:   Fri Nov 2 14:21:32 2018 +0800
+
+    Merge branch 'master' of github.com:fanyinjiang/blog
+
+commit 5a72f0f7fdc1d21cc7cbf074e967ce7693099660
+Author: fanyinjiang <1757510543@qq.com>
+Date:   Fri Nov 2 14:21:02 2018 +0800
+
+    test
+
+commit d0673f427d9a885034102f63ef18b6086ed72f47
+Author: OvO <1757510543@qq.com>
+Date:   Fri Nov 2 14:20:28 2018 +0800
+
+    Create README.md
+
+commit df834afada286e9b15343d3a5f46f9969de018d1
+Author: fanyinjiang <1757510543@qq.com>
+Date:   Fri Nov 2 14:18:05 2018 +0800
+
+    add md
