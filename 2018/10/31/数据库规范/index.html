@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2018/10/31/数据库规范/">
+    
+    
+    <title>Mysql规范 | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="mysql,范式">
+    <meta name="description" content="数据库规范基础规范必须使用InnoDB存储引擎     支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高   必须使用UTF8字符集,新库默认使用utf8mb4字符集     万国码，无需转码，无乱码风险，节省空间   数据表、数据字段必须加入中文注释 禁止使用存储过程、视图、触发器、Event     高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移">
+<meta name="keywords" content="mysql,范式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql规范">
+<meta property="og:url" content="https://www.sakuraus.cn/2018/10/31/数据库规范/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="数据库规范基础规范必须使用InnoDB存储引擎     支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高   必须使用UTF8字符集,新库默认使用utf8mb4字符集     万国码，无需转码，无乱码风险，节省空间   数据表、数据字段必须加入中文注释 禁止使用存储过程、视图、触发器、Event     高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-19T06:39:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mysql规范">
+<meta name="twitter:description" content="数据库规范基础规范必须使用InnoDB存储引擎     支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高   必须使用UTF8字符集,新库默认使用utf8mb4字符集     万国码，无需转码，无乱码风险，节省空间   数据表、数据字段必须加入中文注释 禁止使用存储过程、视图、触发器、Event     高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanyinjiang" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Mysql规范</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Mysql规范</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-10-31T13:13:30.249Z" itemprop="datePublished" class="page-time">
+  2018-10-31
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Mysql/">Mysql</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#数据库规范"><span class="post-toc-number">1.</span> <span class="post-toc-text">数据库规范</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基础规范"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">基础规范</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#命名规范"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">命名规范</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#表设计规范"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">表设计规范</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#字段设计规范"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">字段设计规范</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#索引设计规范"><span class="post-toc-number">1.5.</span> <span class="post-toc-text">索引设计规范</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SQL使用规范"><span class="post-toc-number">1.6.</span> <span class="post-toc-text">SQL使用规范</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#补充"><span class="post-toc-number">1.7.</span> <span class="post-toc-text">补充</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#时间字段的选择-timestamp-datetime-int"><span class="post-toc-number">1.8.</span> <span class="post-toc-text">时间字段的选择 timestamp,datetime,int</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#每个表增加create-time、update-time两个字段"><span class="post-toc-number">1.9.</span> <span class="post-toc-text">每个表增加create_time、update_time两个字段</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#参考链接"><span class="post-toc-number">1.10.</span> <span class="post-toc-text">参考链接</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-数据库规范" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Mysql规范</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-10-31 21:13:30" datetime="2018-10-31T13:13:30.249Z" itemprop="datePublished">2018-10-31</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Mysql/">Mysql</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="数据库规范"><a href="#数据库规范" class="headerlink" title="数据库规范"></a>数据库规范</h1><h2 id="基础规范"><a href="#基础规范" class="headerlink" title="基础规范"></a>基础规范</h2><p>必须使用InnoDB存储引擎  </p>
+<blockquote>
+<ul>
+<li>支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</li>
+</ul>
+</blockquote>
+<p>必须使用UTF8字符集,新库默认使用utf8mb4字符集  </p>
+<blockquote>
+<ul>
+<li>万国码，无需转码，无乱码风险，节省空间</li>
+</ul>
+</blockquote>
+<p>数据表、数据字段必须加入中文注释</p>
+<p>禁止使用存储过程、视图、触发器、Event  </p>
+<blockquote>
+<ul>
+<li>高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移到服务层”，并发量大的情况下，这些功能很可能将数据库拖死，业务逻辑放到服务层具备更好的扩展性，能够轻易实现“增机器就加性能”。数据库擅长存储与索引，CPU计算还是上移吧</li>
+</ul>
+</blockquote>
+<p>禁止存储大文件或者大照片  </p>
+<blockquote>
+<ul>
+<li>大文件和照片存储在文件系统，数据库里存URI多好</li>
+</ul>
+</blockquote>
+<h2 id="命名规范"><a href="#命名规范" class="headerlink" title="命名规范"></a>命名规范</h2><p>只允许使用内网域名，而不是ip连接数据库<br>线上环境、开发环境、测试环境数据库内网域名遵循命名规范</p>
+<blockquote>
+<ul>
+<li>业务名称：yprinter  </li>
+<li>本地环境：yprinter_local  </li>
+<li>测试环境：yprinter_test  </li>
+<li>线上环境：yprinter_pro  </li>
+<li>从库在名称后加-s标识，备库在名称后加-ss标识  </li>
+<li>线上从库：yprinter_pro-s  </li>
+<li>线上备库：yprinter_pro-ss  </li>
+</ul>
+</blockquote>
+<p>库名、表名、字段名：小写，下划线风格，不超过32个字符，必须见名知意，禁止拼音英文混用<br>表名t_xxx，非唯一索引名idx_xxx，唯一索引名uniq_xxx</p>
+<h2 id="表设计规范"><a href="#表设计规范" class="headerlink" title="表设计规范"></a>表设计规范</h2><p>单实例表数目必须小于500<br>单表列数目必须小于30<br>表必须有主键，例如自增主键</p>
+<blockquote>
+<ul>
+<li>主键递增，数据行写入可以提高插入性能，可以避免page分裂，减少表碎片提升空间和内存的使用  </li>
+<li>主键要选择较短的数据类型， Innodb引擎普通索引都会保存主键的值，较短的数据类型可以有效的减少索引的磁盘空间，提高索引的缓存效率  </li>
+<li>无主键的表删除，在row模式的主从架构，会导致备库夯住  </li>
+</ul>
+</blockquote>
+<p>禁止 使用外键，如果有外键完整性约束，需要应用程序控制：外键会导致表与表之间耦合，update与delete操作都会涉及相关联的表，十分影响sql的性能，甚至造成死锁。大数据高并发业务场景下数据使用以性能优先</p>
+<h2 id="字段设计规范"><a href="#字段设计规范" class="headerlink" title="字段设计规范"></a>字段设计规范</h2><p>必须把字段定义为NOT NULL并且提供默认值</p>
+<blockquote>
+<ul>
+<li>null的列使索引/索引统计/值比较都更加复杂，对MySQL来说更难优化</li>
+<li>null 这种类型MySQL内部需要进行特殊处理，增加数据库处理记录的复杂性；同等条件下，表中有较多空字段的时候，数据库的处理性能会降低很多</li>
+<li>null值需要更多的存储空，无论是表还是索引中每行中的null的列都需要额外的空间来标识</li>
+<li>对null 的处理时候，只能采用is null或is not null，而不能采用=、in、&lt;、&lt;&gt;、!=、not in这些操作符号。如：where name!=’shenjian’，如果存在name为null值的记录，查询结果就不会包含name为null值的记录</li>
+</ul>
+</blockquote>
+<p>合理使用TEXT、BLOB类型  </p>
+<blockquote>
+<ul>
+<li>TEXT,BLOB类型数据请使用垂直分表,把这类数据分离开来,</li>
+</ul>
+</blockquote>
+<p>禁止使用小数存储货币  </p>
+<blockquote>
+<ul>
+<li>使用整数吧，小数容易导致钱对不上</li>
+</ul>
+</blockquote>
+<p>必须使用varchar(20)存储手机号</p>
+<blockquote>
+<ul>
+<li>涉及到区号或者国家代号，可能出现+-()</li>
+<li>手机号会去做数学运算么?</li>
+<li>varchar可以支持模糊查询，例如：like“138%”</li>
+</ul>
+</blockquote>
+<p>访问频率较低的大字段拆分出数据表</p>
+<blockquote>
+<ul>
+<li>详情</li>
+</ul>
+</blockquote>
+<p>并不需要一定遵守范式理论，适度的冗余，让Query尽量减少Join</p>
+<p>禁止使用ENUM，可使用TINYINT代替</p>
+<blockquote>
+<ul>
+<li>增加新的ENUM值要做DDL操作</li>
+<li>ENUM的内部实际存储就是整数，你以为自己定义的是字符串</li>
+</ul>
+</blockquote>
+<h2 id="索引设计规范"><a href="#索引设计规范" class="headerlink" title="索引设计规范"></a>索引设计规范</h2><p>单表索引建议控制在5个以内<br>单索引字段数不允许超过5个<br>禁止在更新十分频繁、区分度不高的属性上建立索引</p>
+<blockquote>
+<ul>
+<li>更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</li>
+<li>“性别”这种区分度不大的属性，建立索引是没有什么意义的，不能有效过滤数据，性能与全表扫描类似</li>
+</ul>
+</blockquote>
+<p>建立组合索引，必须把区分度高的字段放在前面  </p>
+<blockquote>
+<ul>
+<li>在order by或者group by子句中，如果想通过索引来进行排序，所建索引列的顺序必须与order by或者group by子句的顺序一致，并且所有列的排序方向（倒序或者正序）都一样</li>
+<li>联合索引中的字段应尽量满足过滤数据从多到少的顺序，也就是说差异最大的字段应该房子第一个字段</li>
+</ul>
+</blockquote>
+<h2 id="SQL使用规范"><a href="#SQL使用规范" class="headerlink" title="SQL使用规范"></a>SQL使用规范</h2><p>禁止使用SELECT *，只获取必要的字段，需要显示说明列属性</p>
+<blockquote>
+<ul>
+<li>读取不需要的列会增加CPU、IO、NET消耗</li>
+<li>不能有效的利用覆盖索引</li>
+<li>使用SELECT *容易在增加或者删除字段后出现程序BUG</li>
+</ul>
+</blockquote>
+<p>禁止使用INSERT INTO t_xxx VALUES(xxx)，必须显示指定插入的列属性  </p>
+<blockquote>
+<ul>
+<li>容易在增加或者删除字段后出现程序BUG</li>
+</ul>
+</blockquote>
+<p>禁止使用属性隐式转换</p>
+<blockquote>
+<ul>
+<li>解读：SELECT uid FROM t_user WHERE phone=13812345678 会导致全表扫描，而不能命中phone索引，</li>
+<li>phone是varchar类型，SQL语句带入的是整形，故不会命中索引，加个引号就好了：</li>
+<li>SELECT uid FROM t_user WHERE phone=’13812345678’ </li>
+</ul>
+</blockquote>
+<p>禁止在WHERE条件的属性上使用函数或者表达式</p>
+<blockquote>
+<ul>
+<li>SELECT uid FROM t_user WHERE from_unixtime(day)&gt;=’2017-02-15’ 会导致全表扫描</li>
+<li>正确的写法是：SELECT uid FROM t_user WHERE day&gt;= unix_timestamp(‘2017-02-15 00:00:00’)</li>
+</ul>
+</blockquote>
+<p>禁止负向查询，以及%开头的模糊查询</p>
+<blockquote>
+<ul>
+<li>负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT IN、NOT LIKE等，会导致全表扫描</li>
+<li>%开头的模糊查询，会导致全表扫描</li>
+</ul>
+</blockquote>
+<p>禁止大表使用JOIN查询，禁止大表使用子查询<br>禁止使用OR条件，必须改为IN查询<br>应用程序必须捕获SQL异常，并有相应处理  </p>
+<blockquote>
+<ul>
+<li>select * from student where name=’you’ or name=’me’ or name=’he’</li>
+<li>可以改成 select * from student where name in (‘you’,’me’,’he’);</li>
+</ul>
+</blockquote>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>禁止使用应用程序配置文件内的帐号手工访问线上数据库<br>开发、测试、线上环境隔离<br>数据库状态字段选择尽量不要使用0，php本身对0判断不友好</p>
+<h2 id="时间字段的选择-timestamp-datetime-int"><a href="#时间字段的选择-timestamp-datetime-int" class="headerlink" title="时间字段的选择 timestamp,datetime,int"></a>时间字段的选择 timestamp,datetime,int</h2><ol>
+<li>最主要的区别-受时区影响不同。timestamp会跟随设置的时区变化而变化，而datetime保存的是绝对值不会变化。</li>
+<li>占用存储空间不同。timestamp储存占用4个字节，datetime储存占用8个字节</li>
+<li>可表示的时间范围不同。timestamp可表示范围:1970-01-01 00:00:00~2038-01-09 03:14:07，datetime支持的范围更宽1000-01-01 00:00:00 ~ 9999-12-31 23:59:59</li>
+<li>索引速度不同。timestamp更轻量，索引相对datetime更快。</li>
+<li>使用时间戳的唯一考虑是：你的应用是否涉及多时区，时间数据是否和时区相关。如果回答“是”，那么就必须使用时间戳，没有任何第二方案。如果不涉及,建议使用timestamp<br>显示更直观</li>
+</ol>
+<h2 id="每个表增加create-time、update-time两个字段"><a href="#每个表增加create-time、update-time两个字段" class="headerlink" title="每个表增加create_time、update_time两个字段"></a>每个表增加create_time、update_time两个字段</h2><ol>
+<li>分别表示写入时间以及最后更新时间</li>
+<li>业务上可能用不到,但是对日常运维管理则非常有用</li>
+<li>可以用来判断哪些是可以归档的老数据,定期进行归档 </li>
+<li>用来做自定义的差异备份也很方便</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651959906&amp;idx=1&amp;sn=2cbdc66cfb5b53cf4327a1e0d18d9b4a&amp;chksm=bd2d07be8a5a8ea86dc3c04eced3f411ee5ec207f73d317245e1fefea1628feb037ad71531bc#rd" target="_blank" rel="noopener">58到家数据库30条军规解读</a></p>
+<p><a href="https://mp.weixin.qq.com/s?src=3&amp;timestamp=1494055166&amp;ver=1&amp;signature=xqjBIqXRrTSrhO9bVfPMKw*Gg90a6ZTGaG2SA1uH4jOUTN1KOorK30nmorj9iQUGe0OH*XvA3P5zm4IRHEgQ-oiLKp0cX76iDLgi61XwI4WkP3MDtROPNqTX762WihEK2UqjI5QmINfW*Kr36wneipSUTpnUrCG8CuSLBXdq5zA=" target="_blank" rel="noopener">再议数据库军规</a></p>
+<p><a href="https://segmentfault.com/q/1010000000655428" target="_blank" rel="noopener">时间戳的选择</a></p>
+<p><a href="mysql_opt.pdf">阿里数据库优化</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1004367" target="_blank" rel="noopener">mysql优化</a></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-08-19T06:39:45.000Z" itemprop="dateUpdated">2018-08-19 14:39:45</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2018/10/31/数据库规范/" target="_blank" rel="external">https://www.sakuraus.cn/2018/10/31/数据库规范/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/范式/">范式</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/10/31/数据库规范/&title=《Mysql规范》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/10/31/数据库规范/&title=《Mysql规范》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/10/31/数据库规范/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Mysql规范》 — don't be evil&url=https://www.sakuraus.cn/2018/10/31/数据库规范/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/10/31/数据库规范/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/10/31/应用程序API约定/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">Api约束</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/10/31/快跑者基本开发流程/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">开发流程</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ありがとうございます
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号-1</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/10/31/数据库规范/&title=《Mysql规范》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/10/31/数据库规范/&title=《Mysql规范》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/10/31/数据库规范/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Mysql规范》 — don't be evil&url=https://www.sakuraus.cn/2018/10/31/数据库规范/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/10/31/数据库规范/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACKklEQVR42u3aW46DMAwF0O5/08wCKuDapiORHL6qipIcKll+5POJr+Pk+r7n7P7rZ5598/CFgYHxWsZxeSVL9njJC8pXwcDA2IFxFsF69yRhNGdfr4uBgYFxdk8eFq8BZ0EWAwMDY8KYFKu9xBEDAwMjL2KrpN4L+nktjoGB8UJG3nX//88/mW9gYGC8inEUrzztmwwmy7vCwMBYmpEHuDwt68GqaR8GBsY+jHyxvGWWBNnesLPw12BgYCzHeKqITX6VP6cQsjEwMJZmzDfa+21+UKzZesPAwFiakTfX5ilmrzFXnsdiYGAswZinaHm4zA92lIMvBgbG0oxqg2weKKujzXxXGBgY6zHysWKS5FWjX68yvekaYmBgbMOoBsdegywfKpTLVwwMjIUYSaqXh93q4dfe0KI838DAwHg5o7pAb7uToWZUNmNgYGzASA6n5injJN1sHrPAwMDYgDHJtfJXkIwn8yEoBgbGPoynytdekVze6HUSiYGBsQGj1xrL2/eTMjV6BRgYGJsxkuWbrbEAnySX5YocAwNjCUZefD7VAas2124SUwwMjEUZkwMT1RI3D9mPJYUYGBhLMCbHLJJA3Esxk603D5xhYGC8lpEE2WrZmTfj8obdzeoYGBgbMPKCs3oso9fOKx/vwMDAwBgE3HxIMMphMTAwMIK22gNBsxiyRwEXAwPjhYw8gettNy9rk/CNgYGxG6OXdzUfFKSV1WEnBgbG0ow/toMD8a5+HlgAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

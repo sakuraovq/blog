@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2018/09/02/微服务架构重要部件/">
+    
+    
+    <title>微服务架构理论-基础与重要部件 | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="MicroService">
+    <meta name="description" content="内容介绍微服务基础客户端如何访问这些服务（api Gateway）  传统的开发方式，所有的服务都是本地的，UI可以直接调用，现在按功能拆分成独立的服务，跑在独立的运行环境中。客户端UI如何访问他的？后台有N个服务，前台就需要记住管理N个服务，一个服务下线/更新/升级，前台就要重新部署，这明显不服务我们拆分的理念，特别当前台是移动应用的时候，通常业务变化的节奏更快。另外，N个小服务的调用也是一个不">
+<meta name="keywords" content="MicroService">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务架构理论-基础与重要部件">
+<meta property="og:url" content="https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="内容介绍微服务基础客户端如何访问这些服务（api Gateway）  传统的开发方式，所有的服务都是本地的，UI可以直接调用，现在按功能拆分成独立的服务，跑在独立的运行环境中。客户端UI如何访问他的？后台有N个服务，前台就需要记住管理N个服务，一个服务下线/更新/升级，前台就要重新部署，这明显不服务我们拆分的理念，特别当前台是移动应用的时候，通常业务变化的节奏更快。另外，N个小服务的调用也是一个不">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/service-1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/breaker.png">
+<meta property="og:updated_time" content="2018-09-02T03:47:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="微服务架构理论-基础与重要部件">
+<meta name="twitter:description" content="内容介绍微服务基础客户端如何访问这些服务（api Gateway）  传统的开发方式，所有的服务都是本地的，UI可以直接调用，现在按功能拆分成独立的服务，跑在独立的运行环境中。客户端UI如何访问他的？后台有N个服务，前台就需要记住管理N个服务，一个服务下线/更新/升级，前台就要重新部署，这明显不服务我们拆分的理念，特别当前台是移动应用的时候，通常业务变化的节奏更快。另外，N个小服务的调用也是一个不">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/service-1.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanyinjiang" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">微服务架构理论-基础与重要部件</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">微服务架构理论-基础与重要部件</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished" class="page-time">
+  2018-09-02
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#内容介绍"><span class="post-toc-number">1.</span> <span class="post-toc-text">内容介绍</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#微服务基础"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">微服务基础</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#客户端如何访问这些服务（api-Gateway）"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">客户端如何访问这些服务（api Gateway）</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务之间如何通信（服务调用）"><span class="post-toc-number">1.1.2.</span> <span class="post-toc-text">服务之间如何通信（服务调用）</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#这么多服务怎么查找（服务发现）"><span class="post-toc-number">1.1.3.</span> <span class="post-toc-text">这么多服务怎么查找（服务发现）</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务挂了怎么办（服务熔断）"><span class="post-toc-number">1.1.4.</span> <span class="post-toc-text">服务挂了怎么办（服务熔断）</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#微服务重要组成"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">微服务重要组成</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务注册中心"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">服务注册中心</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#负载均衡"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">负载均衡</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#容错"><span class="post-toc-number">1.2.3.</span> <span class="post-toc-text">容错</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#熔断"><span class="post-toc-number">1.2.4.</span> <span class="post-toc-text">熔断</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#限流和降级"><span class="post-toc-number">1.2.5.</span> <span class="post-toc-text">限流和降级</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#API网关"><span class="post-toc-number">1.2.6.</span> <span class="post-toc-text">API网关</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#超时和重试"><span class="post-toc-number">1.2.7.</span> <span class="post-toc-text">超时和重试</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-微服务架构重要部件" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">微服务架构理论-基础与重要部件</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="内容介绍"><a href="#内容介绍" class="headerlink" title="内容介绍"></a>内容介绍</h1><h2 id="微服务基础"><a href="#微服务基础" class="headerlink" title="微服务基础"></a>微服务基础</h2><h3 id="客户端如何访问这些服务（api-Gateway）"><a href="#客户端如何访问这些服务（api-Gateway）" class="headerlink" title="客户端如何访问这些服务（api Gateway）"></a>客户端如何访问这些服务（api Gateway）</h3><blockquote>
+<ul>
+<li>传统的开发方式，所有的服务都是本地的，UI可以直接调用，现在按功能拆分成独立的服务，跑在独立的运行环境中。客户端UI如何访问他的？后台有N个服务，前台就需要记住管理N个服务，一个服务下线/更新/升级，前台就要重新部署，这明显不服务我们拆分的理念，特别当前台是移动应用的时候，通常业务变化的节奏更快。另外，N个小服务的调用也是一个不小的网络开销。还有一般微服务在系统内部，通常是无状态的，用户登录信息和权限管理最好有一个统一的地方维护管理（OAuth）。</li>
+</ul>
+</blockquote>
+<pre><code>所以，一般在后台N个服务和UI之间一般会一个代理或者叫API Gateway，他的作用包括
+
+•提供统一服务入口，让微服务对前台透明
+
+•聚合后台的服务，节省流量，提升性能
+
+•提供安全，过滤，流控等API管理功能
+
+我的理解其实这个API Gateway可以有很多广义的实现办法，可以是一个软件比如kong，也可以是一个swoole的服务端自己编写的程序。他们最重要的作用是为前台（通常是移动应用）提供后台服务的聚合，提供一个统一的服务出口，解除他们之间的耦合，不过API Gateway也有可能成为单点故障点或者性能的瓶颈。
+</code></pre><h3 id="服务之间如何通信（服务调用）"><a href="#服务之间如何通信（服务调用）" class="headerlink" title="服务之间如何通信（服务调用）"></a>服务之间如何通信（服务调用）</h3><blockquote>
+<ul>
+<li>因为所有的微服务都是独立的进程跑在独立的虚拟机上，所以服务间的通行就是IPC（inter process communication），已经有很多成熟的方案。现在基本最通用的有两种方式。这几种方式，展开来讲都可以写本书，而且大家一般都比较熟悉细节了， 就不展开讲了,简单了解下后面细讲<br>  REST<br>  RPC<br>  一般同步调用比较简单，一致性强，但是容易出调用问题，性能体验上也会差些，特别是调用层次多的时候。RESTful和RPC的比较也是一个很有意思的话题。一般REST基于HTTP，更容易实现，更容易被接受，服务端实现技术也更灵活些，各个语言都能支持，同时能跨客户端，对客户端没有特殊的要 求，只要封装了HTTP的SDK就能调用，所以相对使用的广一些。RPC也有自己的优点，传输协议更高效，安全更可控，特别在一个公司内部，如果有统一个的开发规范和统一的服务框架时，他的开发效率优势更明显些。就看各自的技术积累实际条件，自己的选择了。</li>
+</ul>
+</blockquote>
+<h3 id="这么多服务怎么查找（服务发现）"><a href="#这么多服务怎么查找（服务发现）" class="headerlink" title="这么多服务怎么查找（服务发现）"></a>这么多服务怎么查找（服务发现）</h3><blockquote>
+<ul>
+<li>在微服务架构中，一般每一个服务都是有多个拷贝，来做负载均衡。一个服务随时可能下线，也可能应对临时访问压力增加新的服务节点。服务之间如何相互 感知？服务如何管理？这就是服务发现的问题了。一般有两类做法，也各有优缺点。基本都是通过consul等类似技术做服务注册信息的分布式管理。当 服务上线时，服务提供者将自己的服务信息注册到consul（或类似框架），并通过心跳检测健康状态，实时更新链接信息。服务调用者通过consul寻址，根据可定制算法，找到一个服务，还可以将服务信息缓存在本地以提高性能。当服务下线时，consul会发通知给服务客户端。</li>
+</ul>
+</blockquote>
+<pre><code>客户端做：优点是架构简单，扩展灵活，只对服务注册器依赖。缺点是客户端要维护所有调用服务的地址，有技术难度，一般大公司都有成熟的内部框架支持，比如Dubbo。 
+
+服务端做：所有服务对于前台调用方透明，一般在小公司在云服务上部署的应用采用的比较多。
+</code></pre><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/service-1.png" alt="Alt text" title="service">
+                </div>
+                <div class="image-caption">service</div>
+            </figure>
+<h3 id="服务挂了怎么办（服务熔断）"><a href="#服务挂了怎么办（服务熔断）" class="headerlink" title="服务挂了怎么办（服务熔断）"></a>服务挂了怎么办（服务熔断）</h3><blockquote>
+<ul>
+<li>分布式最大的特性就是网络是不可靠 的。通过微服务拆分能降低这个风险，不过如果没有特别的保障，结局肯定是噩梦。比如一个线上故障就是一个很不起眼的数据库修改功能，在访问量上升 时，导致数据库load彪高，影响了所在应用的性能，从而影响所有调用这个应用服务的前台应用。所以当我们的系统是由一系列的服务调用链组成的时候，我们必须确保任一环节出问题都不至于影响整体链路。相应的手段有很多：</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>重试机制</li>
+<li>限流</li>
+<li>熔断机制</li>
+<li>负载均衡</li>
+<li>降级（本地缓存） </li>
+</ul>
+</blockquote>
+<h2 id="微服务重要组成"><a href="#微服务重要组成" class="headerlink" title="微服务重要组成"></a>微服务重要组成</h2><h3 id="服务注册中心"><a href="#服务注册中心" class="headerlink" title="服务注册中心"></a>服务注册中心</h3><blockquote>
+<ul>
+<li>服务之间需要创建一种服务发现机制，用于帮助服务之间互相感知彼此的存在。服务启动时会将自身的服务信息注册到注册中心，并订阅自己需要消费的服务。   </li>
+<li>服务注册中心是服务发现的核心。它保存了各个可用服务实例的网络地址（IPAddress和Port）。服务注册中心必须要有高可用性和实时更新功能。上面提到的 consul 就是一个服务注册中心。它提供了服务注册和查询服务信息的REST API。服务通过使用POST请求注册自己的IPAddress和Port。每30秒发送一个PUT请求刷新注册信息。通过DELETE请求注销服务。客户端通过GET请求获取可用的服务实例信息。常见的服务注册中心的有：  </li>
+<li>etcd —– 高可用，分布式，强一致性的，key-value，Kubernetes和Cloud Foundry都是使用了etcd。</li>
+<li>consul —–一个用于discovering和configuring的工具。它提供了允许客户端注册和发现服务的API。Consul可以进行服务健康检查，以确定服务的可用性。 </li>
+<li>zookeeper —— 在分布式应用中被广泛使用，高性能的协调服务。  Apache Zookeeper 最初为Hadoop的一个子项目，但现在是一个顶级项目。</li>
+</ul>
+</blockquote>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><blockquote>
+<ul>
+<li>服务高可用的保证手段，为了保证高可用，每一个微服务都需要部署多个服务实例来提供服务。此时客户端进行服务的负载均衡</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>负载均衡的常见策略</li>
+<li>随机<br>把来自网络的请求随机分配给内部中的多个服务器。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>轮询<br>每一个来自网络中的请求，轮流分配给内部的服务器，从1到N然后重新开始。此种负载均衡算法适合服务器组内部的服务器都具有相同的配置并且平均服务请求相对均衡的情况。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>加权轮询<br>根据服务器的不同处理能力，给每个服务器分配不同的权值，使其能够接受相应权值数的服务请求。例如：服务器A的权值被设计成1，B的权值是3，C的权值是6，则服务器A、B、C将分别接受到10%、30％、60％的服务请求。此种均衡算法能确保高性能的服务器得到更多的使用率，避免低性能的服务器负载过重。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>IP Hash<br>这种方式通过生成请求源IP的哈希值，并通过这个哈希值来找到正确的真实服务器。这意味着对于同一主机来说他对应的服务器总是相同。使用这种方式，你不需要保存任何源IP。但是需要注意，这种方式可能导致服务器负载不平衡。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>最少连接数<br>客户端的每一次请求服务在服务器停留的时间可能会有较大的差异，随着工作时间加长，如果采用简单的轮循或随机均衡算法，每一台服务器上的连接进程可能会产生极大的不同，并没有达到真正的负载均衡。最少连接数均衡算法对内部中需负载的每一台服务器都有一个数据记录，记录当前该服务器正在处理的连接数量，当有新的服务连接请求时，将把当前请求分配给连接数最少的服务器，使均衡更加符合实际情况，负载更加均衡。此种均衡算法适合长时处理的请求服务，如FTP。</li>
+</ul>
+</blockquote>
+<h3 id="容错"><a href="#容错" class="headerlink" title="容错"></a>容错</h3><blockquote>
+<ul>
+<li>容错，这个词的理解，直面意思就是可以容下错误，不让错误再次扩张，让这个错误产生的影响在一个固定的边界之内，“千里之堤毁于蚁穴”我们用容错的方式就是让这种蚁穴不要变大。那么我们常见的降级，限流，熔断器，超时重试等等都是容错的方法。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>在调用服务集群时，如果一个微服务调用异常，如超时，连接异常，网络异常等，则根据容错策略进行服务容错。目前支持的服务容错策略有快速失败，失效切换。如果连续失败多次则直接熔断，不再发起调用。这样可以避免一个服务异常拖垮所有依赖于他的服务。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>容错策略</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>快速失败<br>服务只发起一次调用，失败立即报错。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>失效切换<br>服务发起调用，当出现失败后，重试其他服务器。通常用于读操作，但重试会带来更长时间的延迟。重试的次数通常是可以设置的</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>失败安全<br>失败安全，当服务调用出现异常时，直接忽略。通常用于写入日志等操作。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>失败自动恢复<br>当服务调用出现异常时，记录失败请求，定时重发。通常用于消息通知。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>广播调用<br>广播调用所有提供者，逐个调用，任何一台失败则失败。通常用于通知所有提供者更新缓存或日志等本地资源信息</li>
+</ul>
+</blockquote>
+<h3 id="熔断"><a href="#熔断" class="headerlink" title="熔断"></a>熔断</h3><blockquote>
+<ul>
+<li>熔断技术可以说是一种“智能化的容错”，当调用满足失败次数，失败比例就会触发熔断器打开，有程序自动切断当前的RPC调用,来防止错误进一步扩大。实现一个熔断器主要是考虑三种模式，关闭，打开，半开。<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/breaker.png" alt="Alt text" title="breaker">
+                </div>
+                <div class="image-caption">breaker</div>
+            </figure></li>
+<li>我们在处理异常的时候，要根据具体的业务情况来决定处理方式，比如我们调用商品接口，对方只是临时做了降级处理，那么作为网关调用就要切到可替换的服务上来执行或者获取托底数据，给用户友好提示。还有要区分异常的类型，比如依赖的服务崩溃了，这个可能需要花费比较久的时间来解决。也可能是由于服务器负载临时过高导致超时。作为熔断器应该能够甄别这种异常类型，从而根据具体的错误类型调整熔断策略。增加手动设置，在失败的服务恢复时间不确定的情况下，管理员可以手动强制切换熔断状态。最后，熔断器的使用场景是调用可能失败的远程服务程序或者共享资源。如果是本地缓存本地私有资源，使用熔断器则会增加系统的额外开销。还要注意，熔断器不能作为应用程序中业务逻辑的异常处理替代品。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>有一些异常比较顽固，突然发生，无法预测，而且很难恢复，并且还会导致级联失败（举个例子，假设一个服务集群的负载非常高，如果这时候集群的一部分挂掉了，还占了很大一部分资源，整个集群都有可能遭殃）。如果我们这时还是不断进行重试的话，结果大多都是失败的。因此，此时我们的应用需要立即进入失败状态(fast-fail)，并采取合适的方法进行恢复。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>我们可以用状态机来实现CircuitBreaker，它有以下三种状态：</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>关闭( Closed )：默认情况下Circuit Breaker是关闭的，此时允许操作执行。CircuitBreaker内部记录着最近失败的次数，如果对应的操作执行失败，次数就会续一次。如果在某个时间段内，失败次数（或者失败比率）达到阈值，CircuitBreaker会转换到开启( Open )状态。在开启状态中，Circuit Breaker会启用一个超时计时器，设这个计时器的目的是给集群相应的时间来恢复故障。当计时器时间到的时候，CircuitBreaker会转换到半开启( Half-Open )状态。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>开启( Open )：在此状态下，执行对应的操作将会立即失败并且立即抛出异常。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>半开启( Half-Open )：在此状态下，Circuit Breaker会允许执行一定数量的操作。如果所有操作全部成功，CircuitBreaker就会假定故障已经恢复，它就会转换到关闭状态，并且重置失败次数。如果其中 任意一次 操作失败了，Circuit Breaker就会认为故障仍然存在，所以它会转换到开启状态并再次开启计时器（再给系统一些时间使其从失败中恢复）</li>
+</ul>
+</blockquote>
+<h3 id="限流和降级"><a href="#限流和降级" class="headerlink" title="限流和降级"></a>限流和降级</h3><blockquote>
+<ul>
+<li>保证核心服务的稳定性。为了保证核心服务的稳定性，随着访问量的不断增加，需要为系统能够处理的服务数量设置一个极限阀值，超过这个阀值的请求则直接拒绝。同时，为了保证核心服务的可用，可以对否些非核心服务进行降级，通过限制服务的最大访问量进行限流，通过管理控制台对单个微服务进行人工降级</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>关于降级限流的方法业界都已经有很成熟的方法了，比如FAILBACK机制，限流的方法令牌桶，漏桶，信号量等。这里谈一下我们的一些经验，降级一般都是由统一配置中心的降级开关来实现的，那么当有很多个接口来自同一个提供方，这个提供方的系统或这机器所在机房网络出现了问题，我们就要有一个统一的降级开关，不然就要一个接口一个接口的来降级。也就是要对业务类型有一个大闸刀。还有就是 降级切记暴力降级，什么是暴力降级的，比如把论坛功能降调，结果用户显示一个大白板，我们要实现缓存住一些数据，也就是有托底数据。限流一般分为分布式限流和单机限流，如果实现分布式限流的话就要一个公共的后端存储服务比如redis，在大nginx节点上利用lua读取redis配置信息</li>
+</ul>
+</blockquote>
+<h3 id="API网关"><a href="#API网关" class="headerlink" title="API网关"></a>API网关</h3><blockquote>
+<ul>
+<li>这里说的网关是指API网关，直面意思是将所有API调用统一接入到API网关层，有网关层统一接入和输出。一个网关的基本功能有：统一接入、安全防护、协议适配、流量管控、长短链接支持、容错能力。有了网关之后，各个API服务提供团队可以专注于自己的的业务逻辑处理，而API网关更专注于安全、流量、路由等问题。</li>
+</ul>
+</blockquote>
+<h3 id="超时和重试"><a href="#超时和重试" class="headerlink" title="超时和重试"></a>超时和重试</h3><blockquote>
+<ul>
+<li>超时与重试机制也是容错的一种方法，凡是发生RPC调用的地方，比如读取redis，db，mq等，因为网络故障或者是所依赖的服务故障，长时间不能返回结果，就会导致线程增加，加大cpu负载，甚至导致雪崩。所以对每一个RPC调用都要设置超时时间。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>对于强依赖RPC调用资源的情况，还要有重试机制，但是重试的次数建议1-2次，另外如果有重试，那么超时时间就要相应的调小，比如重试1次，那么一共是发生2次调用。如果超时时间配置的是2s，那么客户端就要等待4s才能返回。因此重试+超时的方式，超时时间要调小。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>这里也再谈一下一次PRC调用的时间都消耗在哪些环节，一次正常的调用统计的耗时主要包括： ①调用端RPC框架执行时间 + ②网络发送时间 + ③服务端RPC框架执行时间 + ④服务端业务代码时间。调用方和服务方都有各自的性能监控，比如调用方tp99是500ms，服务方tp99是100ms，找了网络组的同事确认网络没有问题。那么时间都花在什么地方了呢，两种原因，客户端调用方，还有一个原因是网络发生TCP重传。所以要注意这两点。</li>
+</ul>
+</blockquote>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-09-02T03:47:00.000Z" itemprop="dateUpdated">2018-09-02 11:47:00</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2018/09/02/微服务架构重要部件/" target="_blank" rel="external">https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/&title=《微服务架构理论-基础与重要部件》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/&title=《微服务架构理论-基础与重要部件》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《微服务架构理论-基础与重要部件》 — don't be evil&url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2018/09/02/微服务RPC/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">微服务架构理论-RPC通讯调用</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/09/02/微服务详解/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">微服务架构—微服务介绍</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ありがとうございます
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号-1</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/&title=《微服务架构理论-基础与重要部件》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/&title=《微服务架构理论-基础与重要部件》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《微服务架构理论-基础与重要部件》 — don't be evil&url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/09/02/微服务架构重要部件/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACqklEQVR42u3aMa7jMAwFwNz/0rttgI/Y70mi4WJcBbbiaFRIDMnPJ77+fV1/73zf/356/fl6/K/rM3Hh4eHhbUz91+uSp9fLkf9isjTFEuDh4eGN8ZLN+np88t38yLk+fpI54+Hh4b2Hdz2J5GBIDpu1JcPDw8N7Jy/ZxK+ReXJhJ6mBh4eHN83bSTe0G3qb7Hgo14KHh4c3UEV6z+eR+h4eHh7edlX9mU18rcQVvRMPDw9vgNcWtPJCVFLcWtvb2+YwPDw8vLO8s81VbaNVmwpp08d4eHh4E7z9HMZaIJ6X3/IE8WdrEB4eHl4683ajb5+2QXk75kaEh4eHN8Bba2bKt/sk8G3TGfUYPDw8vKO8vGC/k+ptQ+FTpTU8PDy8Cd5acattAlg7Qk61heHh4eGd5bWlponmgLUYuAip8fDw8I7y8gklhaudwn8e1udvw8PDw5vg7U9l7c6pI+Fm6fHw8PAGeCOvK8PuvG2rLYzh4eHhzfES8Fpxq01qJMuXj8TDw8Ob4LVlqrNB8E6rQRTo4+Hh4Q3w2gA3STq09yeSxXh4eHjTvPxP/lo5fycpnHcC4OHh4T3JSzbZfFtPqG0wnY/Bw8PDe4aXb75tgiAvU62lG/Klx8PDw3uS14awbeo22dZzEh4eHt4zvLVif9JWtZ+6zb91rKcMDw8Pr+Tl6YC13q4ksdu+uW69wsPDwzvEa5MLOaDd9PcvPDw8vDneWoKgba5qg/g8gXuzrHh4eHgDvHar3WkLWCtZ5Q1bW0g8PDy8kpdPbqexIMe0C3QzKzw8PLwx3n7gu1P4b+tWxUg8PDy8l/F2ilVt1L9YNsPDw8N7Da/Nc7QtWXVb6i8LHh4e3hivTQSstUOtJYuTwB0PDw/vSd7+H/72aGkPkpGaHh4eHt4K7z+Ib8U6/g26vwAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
