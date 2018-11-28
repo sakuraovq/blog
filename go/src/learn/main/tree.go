@@ -52,14 +52,27 @@ func treeNode() {
 	root.Right.Right = tree.CreateNode(3)
 	root.Left.Left = tree.CreateNode(2)
 	root.Left.Left.SetValue(3)
-	root.Left.Left.Left = tree.CreateNode(4)
+	root.Left.Left.Left = tree.CreateNode(6)
 	root.Left.Left.Right = tree.CreateNode(5)
 	//root.Tar()
 	fmt.Println("my tree")
+	count := 0
 	root.TarFunc(func(node *tree.Node) {
-		node.Print()
+		//node.Print()
+		count++
 	})
+	fmt.Println("node count ", count)
+
 	fmt.Println("END")
 	//post := myTree{&root}
 	//post.postOrder()
+
+	nodeChannel := root.TarChannel()
+	maxNodeValue := 0
+	for node := range nodeChannel {
+		if node.Value > maxNodeValue {
+			maxNodeValue = node.Value
+		}
+	}
+	fmt.Println("max node value", maxNodeValue)
 }

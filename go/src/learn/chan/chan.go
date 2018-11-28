@@ -6,15 +6,46 @@ import (
 )
 
 func main() {
-	chanDemo()
-	bufferedChannel()
+	//chanDemo()
+	//bufferedChannel()
+	channelClose()
 }
 
 func bufferedChannel() {
-	c := make(chan int ,3)
-	c <-1
-	c <-2
-	c <-3
+	c := make(chan int, 3)
+	//read(c)
+	c <- 1
+	c <- 2
+	c <- 3
+	for i := 0; i < 10; i++ {
+		c <- i
+	}
+	time.Sleep(time.Second)
+}
+
+func channelClose() {
+	c := make(chan int, 3)
+	read(c)
+	c <- 1
+	c <- 2
+	c <- 3
+	c <- 5
+	//close(c)
+
+	time.Sleep(time.Second)
+}
+
+func read(ch <-chan int) {
+
+	go func() {
+		for  n := range ch {
+			//n, ok := <-ch
+			//if !ok {
+			//	break
+			//}
+			fmt.Println(n)
+		}
+	}()
 }
 
 // 外部只能发数据

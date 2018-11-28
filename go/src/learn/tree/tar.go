@@ -20,3 +20,14 @@ func (node *Node) TarFunc(f func(*Node)) {
 	f(node)
 	node.Right.TarFunc(f)
 }
+
+func (node *Node) TarChannel() chan *Node {
+	chanNodes := make(chan *Node)
+	go func() {
+		node.TarFunc(func(node *Node) {
+			chanNodes <- node
+		})
+		close(chanNodes)
+	}()
+	return chanNodes
+}
