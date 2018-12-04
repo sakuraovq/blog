@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	//go tool pprof http://localhost:80/debug/pprof/profile  web
+	_ "net/http/pprof"
 	"os"
 	"strings"
 )
@@ -69,6 +72,9 @@ func fileList(writer http.ResponseWriter, request *http.Request) error {
 		return UserReportError("path must start with " + prefix)
 	}
 	path := request.URL.Path[len(prefix):]
+	path = "C:/Go_WorkSpace/src/learn/" + path
+
+	fmt.Println(path)
 	file, e := os.Open(path)
 	if e != nil {
 		return e
