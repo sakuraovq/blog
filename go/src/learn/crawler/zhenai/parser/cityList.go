@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-const cityListParserRule = `<a href="(http://www\.zhenai\.com/zhenghun/[0-9a-z]+)"[^>]*>([^>]+)</a>`
+const cityListParserRule = `<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]*>([^>]+)</a>`
 
 // 获取城市列表
 func GetCityList(contents []byte) engine.ParserResult {
@@ -18,9 +18,9 @@ func GetCityList(contents []byte) engine.ParserResult {
 		parserResult.Request = append(parserResult.Request,
 			engine.Request{
 				Url:        string(m[1]),
-				ParserFunc: engine.NilParserResult,
+				ParserFunc: GetCity,
 			})
-		parserResult.Items = append(parserResult.Items, string(m[2]))
+		parserResult.Items = append(parserResult.Items, "City "+string(m[2]))
 	}
 	return parserResult
 }
