@@ -10,6 +10,7 @@ tags:
 ---
 
 ### _(:з」∠)_接好
+https://www.galmoe.com/t.php?aid=(av号) 获取B站封面
 ![Alt text](https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/70480368_p0_master1200.jpg "angel title")
 > * 210.129.120.46 pixiv.net
    210.129.120.46 www.pixiv.net 
