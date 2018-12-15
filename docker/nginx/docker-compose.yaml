@@ -1,0 +1,64 @@
+version: "3.6"
+services:
+  nginx-load:
+        image: nginx
+        container_name: nginx-load
+        working_dir: /nginx-test
+        ports:
+          - "8001:80"
+        stdin_open: true
+        networks:
+          nginx-master:
+             ipv4_address: 172.50.0.10
+        tty: true
+        privileged: true
+        volumes:
+            - /sakuraus/docker/nginx/nginx-load:/nginx-test
+            - /sakuraus/docker/nginx/lua-project/nginx-load:/nginx-test/lua-project
+            - /sakuraus/docker/lua-package:/lua-packge
+        entrypoint:
+          - /bin/bash
+          - nginx.sh
+  nginx-lua1:
+        image: nginx
+        container_name: nginx-lua1
+        working_dir: /nginx-test
+        ports:
+          - "8002:80"
+        stdin_open: true
+        networks:
+            nginx-master:
+             ipv4_address: 172.50.0.11
+        tty: true
+        privileged: true
+        volumes:
+          - /sakuraus/docker/nginx/nginx-lua1:/nginx-test
+          - /sakuraus/docker/nginx/lua-project/nginx-lua1:/nginx-test/lua-project
+          - /sakuraus/docker/lua-package:/lua-packge
+        entrypoint:
+          - /bin/bash
+          - nginx.sh
+
+  nginx-lua2:
+          image: nginx
+          container_name: nginx-lua2
+          working_dir: /nginx-test
+          ports:
+            - "8003:80"
+          stdin_open: true
+          networks:
+             nginx-master:
+               ipv4_address: 172.50.0.12
+          tty: true
+          privileged: true
+          volumes:
+              - /sakuraus/docker/nginx/nginx-lua2:/nginx-test
+              - /sakuraus/docker/nginx/lua-project/nginx-lua2:/nginx-test/lua-project
+              - /sakuraus/docker/lua-package:/lua-packge
+          entrypoint:
+            - /bin/bash
+            - nginx.sh
+networks:
+  nginx-master:
+      external:
+         name: docker_redis-cluster-net

@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"learn/crawler/fetcher"
 	"log"
 )
@@ -17,6 +18,7 @@ func Run(seeds ...Request) {
 		log.Printf("fetching url %s", req.Url)
 		body, e := fetcher.Fetch(req.Url)
 		if e != nil {
+			fmt.Println("fetch error", e.Error())
 			continue
 		}
 		parserResult := req.ParserFunc(body)
