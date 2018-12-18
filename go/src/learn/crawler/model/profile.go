@@ -1,17 +1,18 @@
 package model
 
 // 用户对象
-type UserProfile struct {
+type Profile struct {
 	Name                string //昵称
 	Gender              string //性别
 	Age                 int    //年龄
-	Height              int    // cm
+	Height                string  // cm
 	Weight              int    // kg
-	Income              string // 首页
+	Income              string // 收入
 	Marriage            string // 结婚
 	Education           string // 教育
 	Occupation          string // 职业
 	Car                 string // 是否买车
-	constellation       string // 星座
+	House				string
+	Constellation       string // 星座
 	RegisteredResidence string // 户口
 }
