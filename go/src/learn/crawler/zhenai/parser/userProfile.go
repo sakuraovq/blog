@@ -20,21 +20,23 @@ func init() {
 	profileRegx = regexp.MustCompile(`<div class="m-btn purple" [^>]*>([^>]+)</div>`)
 }
 
-func MatchAtoi(str, fitler string) int {
-	age := strings.Trim(str, fitler)
-	i, e := strconv.Atoi(age)
+func MatchAtoi(str, filter string) int {
+	val := strings.Trim(str, filter)
+	i, e := strconv.Atoi(val)
 	if e != nil {
-		fmt.Println(str+" atoi err"+fitler, e.Error())
+		fmt.Println(str+" atoi err "+filter, e.Error())
 		return 0
 	}
 	return i
 }
 
-func UserProfile(contents []byte) engine.ParserResult {
+func UserProfile(contents []byte, name, gender string) engine.ParserResult {
 	parserResult := engine.ParserResult{}
 	profile := model.Profile{}
 	hobbyMatch := hobbyRegx.FindAllSubmatch(contents, -1)
 
+	profile.Name = name
+	profile.Gender = gender
 	for idx, sub := range hobbyMatch {
 		subStr := string(sub[1])
 		switch idx {
@@ -47,7 +49,6 @@ func UserProfile(contents []byte) engine.ParserResult {
 		}
 	}
 
-	fmt.Println()
 	profileMatch := profileRegx.FindAllSubmatch(contents, -1)
 	for idx, sub := range profileMatch {
 		subStr := string(sub[1])
@@ -64,7 +65,7 @@ func UserProfile(contents []byte) engine.ParserResult {
 		case 3:
 			profile.Height = subStr
 		case 4:
-			profile.Weight = MatchAtoi(subStr, "kg")
+			profile.Weight = subStr
 		case 5:
 			fallthrough
 		case 6:
@@ -78,14 +79,6 @@ func UserProfile(contents []byte) engine.ParserResult {
 		}
 	}
 
-	fmt.Println(profile)
-	parserResult.Request = append(parserResult.Request,
-		engine.Request{
-			Url:        "",
-			ParserFunc: engine.NilParserResult,
-		},
-	)
-	parserResult.Items = append(parserResult.Items, "UserProfile "+"")
-
+	parserResult.Items = []interface{}{profile}
 	return parserResult
 }

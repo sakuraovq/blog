@@ -21,7 +21,6 @@ func GetCityList(contents []byte) engine.ParserResult {
 				ParserFunc: GetCity,
 			})
 		parserResult.Items = append(parserResult.Items, "City "+string(m[2]))
-		break
 	}
 	return parserResult
 }

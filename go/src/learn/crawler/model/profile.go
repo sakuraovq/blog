@@ -6,7 +6,7 @@ type Profile struct {
 	Gender              string //性别
 	Age                 int    //年龄
 	Height                string  // cm
-	Weight              int    // kg
+	Weight              string    // kg
 	Income              string // 收入
 	Marriage            string // 结婚
 	Education           string // 教育
