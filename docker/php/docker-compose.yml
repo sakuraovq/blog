@@ -3,36 +3,36 @@ services:
   php72:
     image: php
     ports:
-        - "9090:9000"
-        - "8090:9090"
+      - "9090:9000"
+      - "8090:9090"
     volumes:
-      -  /sakuraus/docker/php/html:/var/www/html
-      -  /sakuraus/docker/php/conf/php/php.ini:/usr/local/etc/php/php.ini
+      - /sakuraus/docker/php/html:/var/www/html
+      - /sakuraus/docker/php/conf/php/php.ini:/usr/local/etc/php/php.ini
     stdin_open: true
     tty: true
     privileged: true
     networks:
-        php-network:
-          ipv4_address: 172.50.0.21
+      php-network:
+        ipv4_address: 172.50.0.17
   mysql:
     image: mysql:5.7
     ports:
       - "3307:3306"
     volumes:
-       - /sakuraus/docker/php/conf/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
-       - /sakuraus/docker/php/mysql:/var/lib/mysql
+      - /sakuraus/docker/php/conf/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - /sakuraus/docker/php/mysql:/var/lib/mysql
     stdin_open: true
     tty: true
     privileged: true
     networks:
-       mysql-network:
-          ipv4_address: 172.50.0.20
+      mysql-network:
+        ipv4_address: 172.50.0.20
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
 networks:
- php-network:
+  php-network:
     external:
-       name: docker_redis-cluster-net
- mysql-network:
+      name: docker_redis-cluster-net
+  mysql-network:
     external:
-       name: docker_redis-cluster-net
+      name: docker_redis-cluster-net
