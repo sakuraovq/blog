@@ -14,7 +14,7 @@ local jsonObj = cjson.new()   -- 实例化cjson包 cjson下载之后需要make
 
 -- 定时获取地址
 
-local delay = 300
+local delay = 6000
 local check
 check = function()
     consul = tool.http_get("http://172.50.0.13:8500/v1/kv/redis?recurse")  -- 获取consul中的redis_cluster
