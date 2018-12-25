@@ -2,9 +2,17 @@ package engine
 
 import "log"
 
+// Request 调度器
 type Scheduler interface {
 	Submit(Request)
-	SendSchedulerChannelRequest(chan Request)
+	GetWorkerChan() chan Request
+	Run()
+	WorkerNotifier
+}
+
+// worker 通知接口
+type WorkerNotifier interface {
+	WorkerReady(chan Request)
 }
 
 type ConcurrentEngine struct {
@@ -12,19 +20,14 @@ type ConcurrentEngine struct {
 	WorkCount int
 }
 
-func NewConcurrentEngine(scheduler Scheduler, workCount int) ConcurrentEngine {
-	return ConcurrentEngine{Scheduler: scheduler, WorkCount: workCount}
-}
-
 func (e ConcurrentEngine) Run(seed ...Request) {
 
-	in := make(chan Request)
 	out := make(chan ParserResult)
-	// 设置Scheduler 工作chan 为 in 每次submit 到in chan 中
-	e.Scheduler.SendSchedulerChannelRequest(in)
+	// 运行调度器
+	e.Scheduler.Run()
 	// 初始化work
 	for i := 0; i < e.WorkCount; i++ {
-		createWorker(in, out)
+		createWorker(e.Scheduler.GetWorkerChan(), out, e.Scheduler)
 	}
 	// 初始化种子
 	for _, req := range seed {
@@ -46,9 +49,12 @@ func (e ConcurrentEngine) Run(seed ...Request) {
 	}
 }
 
-func createWorker(in chan Request, out chan ParserResult) {
+func createWorker(in chan Request, out chan ParserResult, notify WorkerNotifier) {
+
 	go func() {
 		for {
+			// tell worker is ready
+			notify.WorkerReady(in)
 			req := <-in
 			result, e := worker(req)
 			if e != nil {
