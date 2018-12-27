@@ -1,0 +1,16 @@
+version: "3.6"
+services:
+  consul-nginx:
+    image: consul
+    container_name: consul
+    ports:
+      - "8500:8500"
+    networks:
+      nginx-master:
+        ipv4_address: 172.50.0.13
+    tty: true
+    privileged: true
+networks:
+  nginx-master:
+    external:
+      name: docker_redis-cluster-net

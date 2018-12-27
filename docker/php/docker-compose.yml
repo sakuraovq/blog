@@ -2,6 +2,7 @@ version: "3.6"
 services:
   php72:
     image: php
+    container_name: php
     ports:
       - "9090:9000"
       - "8090:9090"
@@ -16,6 +17,7 @@ services:
         ipv4_address: 172.50.0.17
   mysql:
     image: mysql:5.7
+    container_name: mysql
     ports:
       - "3307:3306"
     volumes:

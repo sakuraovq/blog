@@ -26,7 +26,7 @@ check = function()
     end
     local result=table.concat(consul_addr,',')  -- 是将表里的value值连接
     share_data:set('consul_addr',result)
-    ngx.log(ngx.ERR, "init consul redis address success: ", result)
+    -- ngx.log(ngx.ERR, "init consul redis address success: ", result)
 end
 
 if 0 == ngx.worker.id() then

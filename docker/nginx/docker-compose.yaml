@@ -58,16 +58,6 @@ services:
     entrypoint:
       - /bin/bash
       - nginx.sh
-
-  consul-nginx:
-    image: consul
-    ports:
-      - "8500:8500"
-    networks:
-      nginx-master:
-        ipv4_address: 172.50.0.13
-    tty: true
-    privileged: true
 networks:
   nginx-master:
     external:
