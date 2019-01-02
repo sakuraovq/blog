@@ -7,6 +7,8 @@ import (
 
 const cityListParserRule = `<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]*>([^>]+)</a>`
 
+
+
 // 获取城市列表
 func GetCityList(contents []byte) engine.ParserResult {
 
@@ -20,7 +22,7 @@ func GetCityList(contents []byte) engine.ParserResult {
 				Url:        string(m[1]),
 				ParserFunc: GetCity,
 			})
-		parserResult.Items = append(parserResult.Items, "City "+string(m[2]))
+		//parserResult.Items = append(parserResult.Items, "City "+string(m[2]))
 	}
 	return parserResult
 }

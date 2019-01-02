@@ -1,7 +1,5 @@
 package engine
 
-import "log"
-
 // Request 调度器
 type Scheduler interface {
 	Submit(Request)
@@ -15,9 +13,14 @@ type WorkerNotifier interface {
 	WorkerReady(chan Request)
 }
 
+type Saver interface {
+	Saver()
+}
+
 type ConcurrentEngine struct {
 	Scheduler Scheduler
 	WorkCount int
+	ItemSaver chan interface{}
 }
 
 func (e ConcurrentEngine) Run(seed ...Request) {
@@ -34,17 +37,18 @@ func (e ConcurrentEngine) Run(seed ...Request) {
 		e.Scheduler.Submit(req)
 	}
 
-	gotCount := 0
 	for {
 		// 接收 parerResult
 		parserResult := <-out
 		for _, item := range parserResult.Items {
-			log.Printf("Got item #%d val %v", gotCount, item)
-			gotCount++
+			// 消耗小 不必用队列
+			go func() { e.ItemSaver <- item }()
 		}
 		// 提交请求
 		for _, req := range parserResult.Request {
-			e.Scheduler.Submit(req)
+			if checkDuplicate(req.Url) {
+				e.Scheduler.Submit(req)
+			}
 		}
 	}
 }
@@ -63,4 +67,16 @@ func createWorker(in chan Request, out chan ParserResult, notify WorkerNotifier)
 			out <- result
 		}
 	}()
+}
+
+var Maps = make(map[string]bool, 0xFFFFF)
+
+// 验证url是否重复
+func checkDuplicate(url string) bool {
+	res, _ := Maps[url]
+	if res {
+		return false
+	}
+	Maps[url] = true
+	return true
 }

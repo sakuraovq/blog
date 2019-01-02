@@ -2,6 +2,7 @@ package main
 
 import (
 	"learn/crawler/engine"
+	"learn/crawler/persist"
 	"learn/crawler/scheduler"
 	"learn/crawler/zhenai/parser"
 )
@@ -13,7 +14,8 @@ func main() {
 
 	engine.ConcurrentEngine{
 		Scheduler: &scheduler.QueuedScheduler{},
-		WorkCount: 10,
+		ItemSaver: persist.GetItemSaver(),
+		WorkCount: 20,
 	}.Run(engine.Request{
 		Url:        CrawlerUrl,
 		ParserFunc: parser.GetCityList,
