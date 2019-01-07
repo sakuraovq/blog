@@ -20,7 +20,7 @@ type Saver interface {
 type ConcurrentEngine struct {
 	Scheduler Scheduler
 	WorkCount int
-	ItemSaver chan interface{}
+	ItemSaver chan Item
 }
 
 func (e ConcurrentEngine) Run(seed ...Request) {
@@ -69,14 +69,14 @@ func createWorker(in chan Request, out chan ParserResult, notify WorkerNotifier)
 	}()
 }
 
-var Maps = make(map[string]bool, 0xFFFFF)
+var visitsMaps = make(map[string]bool)
 
 // 验证url是否重复
 func checkDuplicate(url string) bool {
-	res, _ := Maps[url]
-	if res {
+
+	if visitsMaps[url] {
 		return false
 	}
-	Maps[url] = true
+	visitsMaps[url] = true
 	return true
 }

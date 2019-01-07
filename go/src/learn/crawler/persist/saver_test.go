@@ -3,15 +3,21 @@ package persist
 import (
 	"encoding/json"
 	"gopkg.in/olivere/elastic.v3"
+	"learn/crawler/engine"
 	"learn/crawler/model"
 	"testing"
 )
 
 func TestSaver(t *testing.T) {
-	testItem := model.Profile{
-		Name: "test",
+	testItem := engine.Item{
+		Url:  "sakuraus.cn",
+		Id:   "1",
+		Type: "zhenai",
+		Payload: model.Profile{
+			Name: "test",
+		},
 	}
-	id, e := save(testItem)
+	e := save(testItem)
 	if e != nil {
 		panic(e)
 	}
@@ -25,14 +31,14 @@ func TestSaver(t *testing.T) {
 
 	result, err := client.Get().
 		Index(profileDatabase).
-		Type(profileTable).
-		Id(id).
+		Type(testItem.Type).
+		Id(testItem.Id).
 		Do()
 
 	if err != nil {
 		panic(err)
 	}
-	var resultItem model.Profile
+	var resultItem engine.Item
 
 	err = json.Unmarshal(*result.Source, &resultItem)
 

@@ -1,12 +1,14 @@
 package persist
 
 import (
+	"errors"
 	"gopkg.in/olivere/elastic.v3"
+	"learn/crawler/engine"
 	"log"
 )
 
-func GetItemSaver() chan interface{} {
-	saver := make(chan interface{})
+func GetItemSaver() chan engine.Item {
+	saver := make(chan engine.Item)
 
 	go func() {
 		itemCount := 0
@@ -15,7 +17,7 @@ func GetItemSaver() chan interface{} {
 			itemCount++
 			log.Printf("Got count #%d item %+v ", itemCount, item)
 			// TODO: need start elastic search server
-			_, err := save(item)
+			err := save(item)
 			if err != nil {
 				log.Printf("item error %v", err)
 			}
@@ -25,25 +27,29 @@ func GetItemSaver() chan interface{} {
 }
 
 const profileDatabase = "dating_profile"
-const profileTable = "zhenai"
 
-func save(item interface{}) (id string, err error) {
+func save(item engine.Item) error {
 	client, err := elastic.NewClient(
 		elastic.SetSniff(false))
 
 	if err != nil {
-		return "", err
+		return err
+	}
+	if item.Type == "" {
+		return  errors.New("Must exits Type !")
 	}
 
-	response, err := client.Index().
-		Index(profileDatabase).
-		Type(profileTable).
-		BodyJson(item).
-		Do()
+	indexService := client.Index()
+	indexService.Index(profileDatabase).Type(item.Type)
+
+	if item.Id != "" {
+		indexService.Id(item.Id)
+	}
+	_, err = indexService.BodyJson(item.Payload).Do()
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return response.Id, nil
+	return nil
 }

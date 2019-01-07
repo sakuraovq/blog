@@ -16,3 +16,4 @@ type Profile struct {
 	Constellation       string // 星座
 	RegisteredResidence string // 户口
 }
+

@@ -15,7 +15,7 @@ func main() {
 	engine.ConcurrentEngine{
 		Scheduler: &scheduler.QueuedScheduler{},
 		ItemSaver: persist.GetItemSaver(),
-		WorkCount: 20,
+		WorkCount: 10,
 	}.Run(engine.Request{
 		Url:        CrawlerUrl,
 		ParserFunc: parser.GetCityList,

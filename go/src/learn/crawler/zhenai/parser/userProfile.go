@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	hobbyRegx, profileRegx *regexp.Regexp
+	hobbyRegx, profileRegx, guessLikeRegx, guessLikeUserNameRegx, IdRegx *regexp.Regexp
 )
 
 func init() {
@@ -18,6 +18,11 @@ func init() {
 	hobbyRegx = regexp.MustCompile(`<div class="m-btn pink" [^>]*>([^>]+)</div>`)
 	// 用户基本信息匹配
 	profileRegx = regexp.MustCompile(`<div class="m-btn purple" [^>]*>([^>]+)</div>`)
+	guessLikeRegx = regexp.MustCompile(
+		`https://photo.zastatic.com/images/photo/[^/]+/([\d]+)/`)
+	guessLikeUserNameRegx = regexp.MustCompile(
+		`<span class="nickname f-clamp1" [^>]*>([^<]+)</span>`)
+	IdRegx = regexp.MustCompile(`<div class="id" [^>]*>([^<]+)</div>`)
 }
 
 func MatchAtoi(str, filter string) int {
@@ -30,13 +35,14 @@ func MatchAtoi(str, filter string) int {
 	return i
 }
 
-func UserProfile(contents []byte, name, gender string) engine.ParserResult {
+func UserProfile(contents []byte, name, gender, url string, ) engine.ParserResult {
 	parserResult := engine.ParserResult{}
 	profile := model.Profile{}
 	hobbyMatch := hobbyRegx.FindAllSubmatch(contents, -1)
 
 	profile.Name = name
 	profile.Gender = gender
+
 	for idx, sub := range hobbyMatch {
 		subStr := string(sub[1])
 		switch idx {
@@ -49,6 +55,8 @@ func UserProfile(contents []byte, name, gender string) engine.ParserResult {
 		}
 	}
 
+	userId := string(IdRegx.FindAll(contents, -1)[0])
+	userId = strings.TrimPrefix(userId, "ID：")
 	profileMatch := profileRegx.FindAllSubmatch(contents, -1)
 	for idx, sub := range profileMatch {
 		subStr := string(sub[1])
@@ -79,6 +87,40 @@ func UserProfile(contents []byte, name, gender string) engine.ParserResult {
 		}
 	}
 
-	parserResult.Items = []interface{}{profile}
+	parserResult.Items = []engine.Item{
+		{
+			Url:     url,
+			Type:    "zhenai",
+			Id:      userId,
+			Payload: profile,
+		},
+	}
+
+	// 猜你喜欢用户分析
+	guessLikeUserId := guessLikeRegx.FindAllSubmatch(contents, -1)
+	// 猜你喜欢用户名称
+	//guessLikeUserNameList := guessLikeUserNameRegx.FindAllSubmatch(contents, -1)
+
+	idx := 0
+	for _, guessId := range guessLikeUserId {
+		thisGuessId := string(guessId[1])
+
+		if thisGuessId == userId || thisGuessId == "" {
+			continue
+		}
+		//guessLikeUserName := string(guessLikeUserNameList[idx][1]) // 猜你喜欢用户名
+		guessLikeUserName := ""
+		guessUserUrl := "http://album.zhenai.com/u/" + thisGuessId
+
+		guessRequest := engine.Request{
+			Url: guessUserUrl,
+			ParserFunc: func(guessContents []byte) engine.ParserResult {
+				return UserProfile(guessContents, guessLikeUserName, profile.Gender, guessUserUrl)
+			},
+		}
+		idx++
+		parserResult.Request = append(parserResult.Request, guessRequest)
+	}
+
 	return parserResult
 }
