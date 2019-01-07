@@ -25,8 +25,8 @@ func main() {
 	//readFile("abc.txt")
 	//fmt.Println(convertToBin(10), convertToBin(5))
 
-	res := apply(pow, 1, 5)
-	fmt.Println(res)
+	//res := apply(pow, 1, 5)
+	//fmt.Println(res)
 }
 
 func pow(a, b int) int {
