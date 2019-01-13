@@ -11,7 +11,7 @@ func TestGetCityList(t *testing.T) {
 	if e != nil {
 		panic(e)
 	}
-	parserResult := GetCityList(bytes)
+	parserResult := GetCityList(bytes, "http://www.zhenai.com/zhenghun/aba")
 	expectedUrls := []string{
 		"http://www.zhenai.com/zhenghun/aba",
 		"http://www.zhenai.com/zhenghun/akesu",

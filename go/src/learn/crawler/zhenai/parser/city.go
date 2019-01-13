@@ -10,7 +10,7 @@ const getUserGenderRule = `<span class="grayL">性别：</span>([^>])`
 const getNextPage = `href="(http://www.zhenai.com/zhenghun/[^"]+)"`
 
 // 获取城市下面的用户
-func GetCity(contents []byte) engine.ParserResult {
+func GetCity(contents []byte, url string) engine.ParserResult {
 
 	regx := regexp.MustCompile(getUserRule)
 	genderRegx := regexp.MustCompile(getUserGenderRule)
@@ -36,16 +36,19 @@ func GetCity(contents []byte) engine.ParserResult {
 
 	for k, match := range subMatch {
 		// match 作用域在for里面 由于函数不会被当前循环调用 所有需要吧name 拷贝
-		url := string(match[1])         // 用户url
-		gender := string(genders[k][1]) // 性别
 		parserResult.Request = append(parserResult.Request,
 			engine.Request{
-				Url: string(match[1]),
-				ParserFunc: func(contents []byte) engine.ParserResult {
-					return UserProfile(contents, gender, url)
-				},
+				Url:        string(match[1]),
+				ParserFunc: userProfileFunc(string(genders[k][1])),
 			},
 		)
 	}
 	return parserResult
+}
+
+// 用户parserFunc
+func userProfileFunc(gender string) engine.ParserFunction {
+	return func(contents []byte, url string) engine.ParserResult {
+		return UserProfile(contents, url, gender)
+	}
 }

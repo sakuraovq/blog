@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"learn/crawler/fetcher"
 	"log"
 )
 
@@ -30,15 +29,4 @@ func (SimpleEngine) Run(seeds ...Request) {
 		requests = append(requests, result.Request...)
 	}
 
-}
-
-func worker(req Request) (ParserResult, error) {
-	//log.Printf("Fetching url %s", req.Url)
-	body, e := fetcher.Fetch(req.Url)
-	if e != nil {
-		log.Printf("fetch error %v", e)
-		return ParserResult{}, e
-	}
-	parserResult := req.ParserFunc(body)
-	return parserResult, nil
 }

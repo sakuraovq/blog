@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>search</title>
+    <link rel="stylesheet" type="text/css" href="./css/search.css">
+</head>
+<body>
+<div>
+    <form action="" method="get">
+        <input type="text" name="q" value="{{.Query}}"/>
+        <button type="submit">Search</button>
+    </form>
+</div>
+<div>共为你找到相关结果约为{{.Hits}} . 显示从{{.Start}}起共{{len .Items}}个.</div>
+
+<!-- Table goes in the document BODY -->
+<table class="hovertable">
+    <tr>
+        <th>昵称</th>
+        <th>性别</th>
+        <th>年龄</th>
+        <th>身高</th>
+        <th>体重</th>
+        <th>收入</th>
+        <th>教育</th>
+        <th>户口</th>
+        <th>婚姻状态</th>
+        <th>是否买房</th>
+        <th>是否买车</th>
+        <th>星座</th>
+        <th>信息来源</th>
+    </tr>
+    {{range .Items}}
+        <tr onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#d4e3e5';">
+            <td><a href="{{.Url}}" target="_blank">{{.Payload.Name}}</a></td>
+            {{with .Payload}}
+                <td>{{.Gender}}</td>
+                <td>{{.Age}}</td>
+                <td>{{.Height}}</td>
+                <td>{{.Weight}}</td>
+                <td>{{.Income}}</td>
+                <td>{{.Education}}</td>
+                <td>{{.RegisteredResidence}}</td>
+                <td>{{.Marriage}}</td>
+                <td>{{.House}}</td>
+                <td>{{.Car}}</td>
+                <td>{{.Constellation}}</td>
+            {{end}}
+            <td>{{.Type}}</td>
+        </tr>
+    {{else}}
+        <div>未找到相关用户</div>
+    {{end}}
+</table>
+<div>
+    {{if ge .Prev 0}}
+        <a href="/search?q={{.Query}}&from={{.Prev}}">上一页</a>
+    {{end}}
+    <a href="/search?q={{.Query}}&from={{.Next}}">下一页</a>
+</div>
+</body>
+</html>

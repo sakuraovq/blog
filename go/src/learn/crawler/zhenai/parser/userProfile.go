@@ -37,13 +37,15 @@ func MatchAtoi(str, filter string) int {
 	return i
 }
 
-func UserProfile(contents []byte, gender, url string) engine.ParserResult {
+func UserProfile(contents []byte, url, gender string) engine.ParserResult {
 	parserResult := engine.ParserResult{}
 	profile := model.Profile{}
 	hobbyMatch := hobbyRegx.FindAllSubmatch(contents, -1)
-
 	nickName := nickNameRegx.FindAllSubmatch(contents, -1)
-	profile.Name = string(nickName[0][1])
+
+	if nickName != nil {
+		profile.Name = string(nickName[0][1])
+	}
 
 	profile.Gender = gender
 	for idx, sub := range hobbyMatch {
@@ -102,16 +104,14 @@ func UserProfile(contents []byte, gender, url string) engine.ParserResult {
 	guessLikeUserId := guessLikeRegx.FindAllSubmatch(contents, -1)
 	for _, guessId := range guessLikeUserId {
 		thisGuessId := string(guessId[1])
-
 		if thisGuessId == userId {
 			continue
 		}
+
 		guessUserUrl := "http://album.zhenai.com/u/" + thisGuessId
 		guessRequest := engine.Request{
-			Url: guessUserUrl,
-			ParserFunc: func(guessContents []byte) engine.ParserResult {
-				return UserProfile(guessContents, profile.Gender, guessUserUrl)
-			},
+			Url:        guessUserUrl,
+			ParserFunc: userProfileFunc(profile.Gender),
 		}
 		parserResult.Request = append(parserResult.Request, guessRequest)
 	}

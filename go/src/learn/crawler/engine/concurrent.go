@@ -13,10 +13,6 @@ type WorkerNotifier interface {
 	WorkerReady(chan Request)
 }
 
-type Saver interface {
-	Saver()
-}
-
 type ConcurrentEngine struct {
 	Scheduler Scheduler
 	WorkCount int

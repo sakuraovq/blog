@@ -17,20 +17,20 @@ func TestSaver(t *testing.T) {
 			Name: "test",
 		},
 	}
-	e := save(testItem)
+	client, err := elastic.NewClient(
+		elastic.SetSniff(false))
+	if err != nil {
+		panic(err)
+	}
+	const index = "test_profile"
+
+	e := save(testItem, client, index)
 	if e != nil {
 		panic(e)
 	}
 
-	client, err := elastic.NewClient(
-		elastic.SetSniff(false))
-
-	if err != nil {
-		panic(err)
-	}
-
 	result, err := client.Get().
-		Index(profileDatabase).
+		Index(index).
 		Type(testItem.Type).
 		Id(testItem.Id).
 		Do()
