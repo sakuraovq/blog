@@ -24,7 +24,7 @@ func TestSaver(t *testing.T) {
 	}
 	const index = "test_profile"
 
-	e := save(testItem, client, index)
+	e := Save(testItem, client, index)
 	if e != nil {
 		panic(e)
 	}

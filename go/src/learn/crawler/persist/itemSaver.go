@@ -25,7 +25,7 @@ func GetItemSaver(index string) (chan engine.Item, error) {
 			itemCount++
 			log.Printf("Got count #%d item %+v ", itemCount, item)
 			// TODO: need start elastic search server
-			err := save(item, client, index)
+			err := Save(item, client, index)
 			if err != nil {
 				log.Printf("item error %v", err)
 			}
@@ -35,7 +35,7 @@ func GetItemSaver(index string) (chan engine.Item, error) {
 	return saver, nil
 }
 
-func save(item engine.Item, client *elastic.Client, index string) error {
+func Save(item engine.Item, client *elastic.Client, index string) error {
 
 	if item.Type == "" {
 		return errors.New("Must exits Type !")
