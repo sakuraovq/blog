@@ -145,7 +145,7 @@ class Unique
     private function pushLua()
     {
         return '
-              local checkExistKey = KEYS[1]
+            local checkExistKey = KEYS[1]
             -- 判断当前的key时候已经存在队列之中
             local checkExistResult = redis.call("SADD", KEYS[1], KEYS[2])
             

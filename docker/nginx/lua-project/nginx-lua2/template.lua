@@ -40,13 +40,43 @@ local function read_redis(key)
       return resp
 end
 
+
+local function memory_cache_set(key,value)
+
+    local cache_items = share.cache_items  --针对商品详情缓存
+    if not cache_items then
+        return nil
+    end
+    --缓存设置失效的时间，并且是有偏差的 设置随机种子 可能避免 大量缓存同时失效问题
+    math.randomseed(tostring(os.time()):reverse():sub(1, 7))
+    local expireTime= math.random(600,1200)
+    return  cache_items:set(key,value,expireTime)
+
+end
+
+local function memory_cache_get(key)
+    if not cache_items then
+            return nil
+    end
+    return  cache_items:get(key)
+end
+
 local function get_view_params()
 
     local uri_args = ngx.req.get_uri_args()
     local  id = uri_args['id']  -- 如果没有id参数 为nil
-    local content = nil
-    if id then
-       content = read_redis("id_"..uri_args['id'])   --读取redis
+
+   if not id then
+        ngx.say("id 不能为空")
+        return ngx.exit(200)
+    end
+
+    local cache_key = "id_"..id -- 缓存键名
+
+    local content = memory_cache_get(key) -- 首先从本地内存中获取
+
+    if not content then
+       content = read_redis(cache_key)   --读取redis
     end
 
     if not content then
@@ -65,15 +95,21 @@ local function get_view_params()
         end
 
          --内部子请求
-         res = ngx.location.capture(
-            '/php/shop/public/index.php'..ngx.var.request_uri,req_data
-         )
+         --res = ngx.location.capture(
+         --   '/php/shop/public/index.php'..ngx.var.request_uri,req_data
+         --)
+
+        -- 发送到唯一队列消费
+        res = ngx.location.capture(
+            '/php/queue/Producer.php'..ngx.var.request_uri,req_data
+        )
+
 
          if res.status == ngx.HTTP_OK then
              content =  res.body
+             memory_cache_set(key,content)  -- 设置本地缓存
          else
              ngx.say(res.body)
-             content = nil
          end
     end
 

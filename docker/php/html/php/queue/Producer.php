@@ -73,6 +73,6 @@ class Producer
     }
 }
 
-$result = Producer::run(2);
+$result = Producer::run($_GET['id']);
 
 echo $result;
