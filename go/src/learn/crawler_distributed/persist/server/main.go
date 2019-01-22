@@ -1,14 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"gopkg.in/olivere/elastic.v3"
+	"learn/crawler_distributed/config"
 	"learn/crawler_distributed/rpcsupport"
 	"log"
 )
 
 func main() {
 
-	log.Fatal(RpcServer(":1234", "dating_profile"))
+	log.Fatal(RpcServer(
+		fmt.Sprintf(":%d", config.SeverPort),
+		config.ElasticIndex))
 }
 
 func RpcServer(host, index string) error {

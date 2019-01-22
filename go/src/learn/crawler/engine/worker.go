@@ -5,13 +5,13 @@ import (
 	"log"
 )
 
-func worker(req Request) (ParserResult, error) {
-	//log.Printf("Fetching url %s", req.Url)
+func Worker(req Request) (ParserResult, error) {
 	body, e := fetcher.Fetch(req.Url)
 	if e != nil {
 		log.Printf("fetch error %v", e)
 		return ParserResult{}, e
 	}
-	parserResult := req.ParserFunc(body, req.Url)
+
+	parserResult := req.Parse.ParserFunc(body, req.Url)
 	return parserResult, nil
 }

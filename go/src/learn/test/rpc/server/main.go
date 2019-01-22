@@ -6,11 +6,10 @@ import (
 	"learn/crawler_distributed/rpcsupport"
 )
 
-const profileDatabase = "dating_profile"
 
 func main() {
 
-	serverRpc(":1234", profileDatabase)
+	serverRpc(":1234","test")
 }
 
 func serverRpc(host, index string) error {

@@ -111,7 +111,7 @@ func UserProfile(contents []byte, url, gender string) engine.ParserResult {
 		guessUserUrl := "http://album.zhenai.com/u/" + thisGuessId
 		guessRequest := engine.Request{
 			Url:        guessUserUrl,
-			ParserFunc: userProfileFunc(profile.Gender),
+			Parse: NewUserProfileParser(profile.Gender),
 		}
 		parserResult.Request = append(parserResult.Request, guessRequest)
 	}

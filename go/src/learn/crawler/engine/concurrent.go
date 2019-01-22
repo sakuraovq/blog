@@ -56,7 +56,7 @@ func createWorker(in chan Request, out chan ParserResult, notify WorkerNotifier)
 			// tell worker is ready
 			notify.WorkerReady(in)
 			req := <-in
-			result, e := worker(req)
+			result, e := Worker(req)
 			if e != nil {
 				continue
 			}

@@ -29,7 +29,7 @@ func GetCity(contents []byte, url string) engine.ParserResult {
 		parserResult.Request = append(parserResult.Request,
 			engine.Request{
 				Url:        string(city[1]),
-				ParserFunc: GetCity,
+				Parse: engine.NewParserFunc("GetCity", GetCity),
 			},
 		)
 	}
@@ -39,16 +39,9 @@ func GetCity(contents []byte, url string) engine.ParserResult {
 		parserResult.Request = append(parserResult.Request,
 			engine.Request{
 				Url:        string(match[1]),
-				ParserFunc: userProfileFunc(string(genders[k][1])),
+				Parse: NewUserProfileParser(string(genders[k][1])),
 			},
 		)
 	}
 	return parserResult
-}
-
-// 用户parserFunc
-func userProfileFunc(gender string) engine.ParserFunction {
-	return func(contents []byte, url string) engine.ParserResult {
-		return UserProfile(contents, url, gender)
-	}
 }

@@ -16,7 +16,7 @@ func (SimpleEngine) Run(seeds ...Request) {
 		req := requests[0]
 		requests = requests[1:]
 
-		result, e := worker(req)
+		result, e := Worker(req)
 		if e != nil {
 			continue
 		}

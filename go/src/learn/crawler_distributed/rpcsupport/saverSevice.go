@@ -21,8 +21,20 @@ func (saver ItemSaverService) Saver(item engine.Item, result *string) error {
 	if error != nil {
 		return error
 	}
+	log.Printf("item saved %v", item)
 	*result = "ok"
 	return nil
+}
+
+// 初始化 rpcClient
+func NewClient(host string) (*rpc.Client, error) {
+	conn, err := net.Dial("tcp", host)
+
+	if err != nil {
+		return nil, err
+	}
+	client := jsonrpc.NewClient(conn)
+	return client, nil
 }
 
 func RpcServer(host string, service interface{}) error {

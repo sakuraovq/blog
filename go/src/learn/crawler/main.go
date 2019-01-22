@@ -2,17 +2,15 @@ package main
 
 import (
 	"learn/crawler/engine"
-	"learn/crawler/persist"
 	"learn/crawler/scheduler"
 	"learn/crawler/zhenai/parser"
+	"learn/crawler_distributed/client"
+	"learn/crawler_distributed/config"
 )
-
-const CrawlerUrl = "http://www.zhenai.com/zhenghun"
-const profileDatabase = "dating_profile"
 
 // gopm get -g -v golang.org/x/text
 func main() {
-	itemChan, err := persist.GetItemSaver(profileDatabase)
+	itemChan, err := client.GetItemSaver()
 	if err != nil {
 		panic(err)
 	}
@@ -22,8 +20,8 @@ func main() {
 		ItemSaver: itemChan,
 		WorkCount: 15,
 	}.Run(engine.Request{
-		Url:        CrawlerUrl,
-		ParserFunc: parser.GetCityList,
+		Url:   config.ZhenAiSeedUrl,
+		Parse: engine.NewParserFunc("GetCityList", parser.GetCityList),
 	})
 
 }
