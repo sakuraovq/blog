@@ -45,6 +45,7 @@ func RpcServer(host string, service interface{}) error {
 	if err != nil {
 		return err
 	}
+	log.Print("server run host ", host)
 
 	for {
 		conn, err := listener.Accept()

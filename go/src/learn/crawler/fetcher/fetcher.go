@@ -3,6 +3,7 @@ package fetcher
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -10,6 +11,7 @@ import (
 //var rateLimit = time.Tick(10 * time.Millisecond)
 
 func Fetch(url string) ([]byte, error) {
+	log.Print("fetching url ", url)
 	//<-rateLimit
 	request, e := http.NewRequest(http.MethodGet, url, nil)
 	if e != nil {

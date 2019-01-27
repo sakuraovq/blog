@@ -3,7 +3,7 @@ package worker
 import (
 	"fmt"
 	"learn/crawler/engine"
-	parser2 "learn/crawler/zhenai/parser"
+	"learn/crawler/zhenai/parser"
 	"learn/crawler_distributed/config"
 	"log"
 )
@@ -51,22 +51,22 @@ func UnSerializedRequest(serializedRequest Request) (engine.Request, error) {
 }
 
 // 获取能工作的parser
-func GetSerializedRequestParser(parser SerializedParser) (engine.Parser, error) {
+func GetSerializedRequestParser(serializedParser SerializedParser) (engine.Parser, error) {
 
-	switch parser.FuncName {
+	switch serializedParser.FuncName {
 	case config.ParserCityList: // 获取城市列表
-		return engine.NewParserFunc(config.ParserCityList, parser2.GetCityList), nil
+		return engine.NewParserFunc(config.ParserCityList, parser.GetCityList), nil
 	case config.ParserCity: // 获取城市
-		return engine.NewParserFunc(config.ParserCity, parser2.GetCityList), nil
+		return engine.NewParserFunc(config.ParserCity, parser.GetCity), nil
 	case config.ParserProfile: // 获取用户
-		if gender, ok := parser.Args.(string); ok {
-			return parser2.NewUserProfileParser(gender), nil
+		if gender, ok := serializedParser.Args.(string); ok {
+			return parser.NewUserProfileParser(gender), nil
 		}
-		return nil, fmt.Errorf("invail parser UserProfileParser args %v", parser.Args)
+		return nil, fmt.Errorf("invail parser UserProfileParser args %v", serializedParser.Args)
 	case config.NilParser: // 空的parser
 		return &engine.NilParser{}, nil
 	default:
-		return nil, fmt.Errorf("unkown parser %v", parser)
+		return nil, fmt.Errorf("unkown parser %v", serializedParser)
 	}
 }
 

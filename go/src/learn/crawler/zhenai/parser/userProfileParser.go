@@ -1,6 +1,9 @@
 package parser
 
-import "learn/crawler/engine"
+import (
+	"learn/crawler/engine"
+	"learn/crawler_distributed/config"
+)
 
 type UserProfileParser struct {
 	UserGender string
@@ -18,5 +21,5 @@ func (userParser *UserProfileParser) ParserFunc(contents []byte, url string) eng
 }
 
 func (userParser *UserProfileParser) Serialize() (name string, args interface{}) {
-	return "UserProfileParser", userParser.UserGender
+	return config.ParserProfile, userParser.UserGender
 }

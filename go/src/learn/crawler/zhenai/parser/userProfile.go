@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"learn/crawler/engine"
 	"learn/crawler/model"
 	"regexp"
@@ -31,7 +30,7 @@ func MatchAtoi(str, filter string) int {
 	val := strings.Trim(str, filter)
 	i, e := strconv.Atoi(val)
 	if e != nil {
-		fmt.Println(str+" atoi err "+filter, e.Error())
+		//fmt.Println(str+" atoi err "+filter, e.Error())
 		return 0
 	}
 	return i

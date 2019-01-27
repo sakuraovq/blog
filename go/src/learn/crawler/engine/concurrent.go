@@ -1,5 +1,7 @@
 package engine
 
+import "log"
+
 // Request 调度器
 type Scheduler interface {
 	Submit(Request)
@@ -14,10 +16,13 @@ type WorkerNotifier interface {
 }
 
 type ConcurrentEngine struct {
-	Scheduler Scheduler
-	WorkCount int
-	ItemSaver chan Item
+	Scheduler        Scheduler
+	WorkCount        int
+	ItemSaver        chan Item
+	RequestProcessor Processor
 }
+
+type Processor func(Request) (ParserResult, error)
 
 func (e ConcurrentEngine) Run(seed ...Request) {
 
@@ -26,7 +31,7 @@ func (e ConcurrentEngine) Run(seed ...Request) {
 	e.Scheduler.Run()
 	// 初始化work
 	for i := 0; i < e.WorkCount; i++ {
-		createWorker(e.Scheduler.GetWorkerChan(), out, e.Scheduler)
+		e.createWorker(e.Scheduler.GetWorkerChan(), out, e.Scheduler)
 	}
 	// 初始化种子
 	for _, req := range seed {
@@ -49,15 +54,16 @@ func (e ConcurrentEngine) Run(seed ...Request) {
 	}
 }
 
-func createWorker(in chan Request, out chan ParserResult, notify WorkerNotifier) {
+func (e ConcurrentEngine) createWorker(in chan Request, out chan ParserResult, notify WorkerNotifier) {
 
 	go func() {
 		for {
 			// tell worker is ready
 			notify.WorkerReady(in)
 			req := <-in
-			result, e := Worker(req)
+			result, e := e.RequestProcessor(req)
 			if e != nil {
+				log.Print("work error ", e)
 				continue
 			}
 			out <- result
@@ -69,7 +75,7 @@ var visitsMaps = make(map[string]bool)
 
 // 验证url是否重复
 func checkDuplicate(url string) bool {
-
+	// 不存在会返回 false
 	if visitsMaps[url] {
 		return false
 	}

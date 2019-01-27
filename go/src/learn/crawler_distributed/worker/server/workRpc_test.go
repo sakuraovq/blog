@@ -1,6 +1,8 @@
 package main
 
 import (
+	"learn/crawler/engine"
+	"learn/crawler/zhenai/parser"
 	"learn/crawler_distributed/config"
 	"learn/crawler_distributed/rpcsupport"
 	"learn/crawler_distributed/worker"
@@ -21,17 +23,16 @@ func TestWorkRpc(t *testing.T) {
 	if e != nil {
 		t.Errorf("init craw rpc client fail %v", e)
 	}
-	req := worker.Request{
-		Url: "http://album.zhenai.com/u/1437200884",
-		Parser: worker.SerializedParser{
-			FuncName: config.ParserProfile,
-			Args:     "测试下下",
-		},
+	req := engine.Request{
+		Url:   "http://album.zhenai.com/u/1816494626",
+		Parse: parser.NewUserProfileParser("男"),
 	}
+
+	sReq := worker.SerializedRequest(req)
 	var result worker.ParseResult
-	e = client.Call(config.CrawService, req, &result)
+	e = client.Call(config.CrawService, sReq, &result)
 	if e != nil {
 		t.Errorf("call CrawService Fail %v", e)
 	}
-	t.Log("success", result)
+	log.Fatal("result", worker.UnSerializedResult(result))
 }

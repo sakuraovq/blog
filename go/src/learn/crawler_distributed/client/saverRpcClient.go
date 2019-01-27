@@ -8,29 +8,28 @@ import (
 	"log"
 )
 
-func GetItemSaver() (chan engine.Item, error) {
+func GetItemSaver(esPort int) (chan engine.Item, error) {
 
 	client, e := rpcsupport.NewClient(
-		fmt.Sprintf(":%d", config.SeverPort))
+		fmt.Sprintf(":%d", esPort))
 	if e != nil {
 		return nil, e
 	}
 	saver := make(chan engine.Item)
 
-	//var itemCount int32
-
 	for i := 0; i < config.SaverGoCount; i++ {
 		go func() {
 			for {
 				item := <-saver
-				result := ""
-				err := client.Call(config.SaverService, item, &result)
+				// 不阻塞 异步saver
+				go func() {
+					result := ""
+					err := client.Call(config.SaverService, item, &result)
 
-				if err != nil {
-					log.Printf("item error %v", err)
-				}
-				//atomic.AddInt32(&itemCount, 1)
-				//log.Printf("Got count #%d item %+v saved result %s", itemCount, item, result)
+					if err != nil {
+						log.Printf("item error %v", err)
+					}
+				}()
 			}
 			client.Close()
 		}()

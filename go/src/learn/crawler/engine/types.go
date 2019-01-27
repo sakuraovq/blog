@@ -35,8 +35,6 @@ func (parser *NilParser) Serialize() (name string, args interface{}) {
 	return "NilParser", nil
 }
 
-
-
 type Parse struct {
 	Parser   ParserFunction
 	FuncName string

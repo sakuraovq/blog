@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"gopkg.in/olivere/elastic.v3"
 	"learn/crawler_distributed/config"
@@ -8,10 +9,15 @@ import (
 	"log"
 )
 
+var esPort = flag.Int("es_port",
+	config.SeverPort,
+	"elastic search port default "+string(config.SeverPort))
+
 func main() {
+	flag.Parse()
 
 	log.Fatal(RpcServer(
-		fmt.Sprintf(":%d", config.SeverPort),
+		fmt.Sprintf(":%d", *esPort),
 		config.ElasticIndex))
 }
 

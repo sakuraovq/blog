@@ -4,7 +4,7 @@ const (
 	// rpc sever port
 	SeverPort = 1234
 
-	WorkPort0 = 1235
+	WorkPort0 = 9000
 
 	// elasticSearch Index
 	ElasticIndex = "dating_profile"
@@ -15,8 +15,9 @@ const (
 	// json rpc SaverService
 	SaverService = "ItemSaverService.Saver"
 
+	// worker service
 	CrawService = "CrawService.Process"
 
-	// zhenai web seed url
+	// zhenAi web seed url
 	ZhenAiSeedUrl = "http://www.zhenai.com/zhenghun"
 )
