@@ -30,8 +30,7 @@ func GetItemSaver(esPort int) (chan engine.Item, error) {
 						log.Printf("item error %v", err)
 					}
 				}()
-			}
-			client.Close()
+			}		
 		}()
 	}
 	return saver, nil
