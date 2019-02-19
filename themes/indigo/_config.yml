@@ -19,7 +19,7 @@ menu:
     text: Categories
     url: /categories
   github:
-    url: https://github.com/fanyinjiang
+    url: https://github.com/sakuraovq
     target: _blank
   twitter:
     url: https://twitter.com/sakuraovq
@@ -64,7 +64,7 @@ share: true
 
 # 是否开启打赏，关闭 reward: false
 reward:
-  title: ありがとうございます
+  title: 你的支持,就是我的动力
   wechat: /img/wechat.jpg     #微信，关闭设为 false
   alipay: /img/alipay.jpg     #支付宝，关闭设为 false
 
