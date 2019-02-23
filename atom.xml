@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.sakuraus.cn/"/>
-  <updated>2018-12-20T08:36:04.177Z</updated>
+  <updated>2019-02-23T02:22:56.830Z</updated>
   <id>https://www.sakuraus.cn/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>关于git clean 的用法</title>
+    <link href="https://www.sakuraus.cn/2019/02/23/git_clean/"/>
+    <id>https://www.sakuraus.cn/2019/02/23/git_clean/</id>
+    <published>2019-02-22T16:00:00.000Z</published>
+    <updated>2019-02-23T02:22:56.830Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="git-clean-n"><a href="#git-clean-n" class="headerlink" title="git clean -n"></a>git clean -n</h4><p>是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真正的删除文件, 只是一个提醒</p><h3 id="git-clean-f"><a href="#git-clean-f" class="headerlink" title="git clean -f"></a>git clean -f</h3><p>删除当前目录下所有没有track过的文件. 他不会删除.gitignore文件里面指定的文件夹和文件, 不管这些文件有没有被track过</p><h3 id="git-clean-df"><a href="#git-clean-df" class="headerlink" title="git clean -df"></a>git clean -df</h3><p>删除当前目录下没有被track过的文件和文件夹</p><h3 id="回到最新提交的版本"><a href="#回到最新提交的版本" class="headerlink" title="回到最新提交的版本"></a>回到最新提交的版本</h3><p>git reset –hard</p><blockquote><ul><li>经常合并父级分支 或者同级分支经常 容易出 checkout 检出失败的问题<br>可以用过 git clean -df 删除 错误的 文件 <figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/git_checkout.png" alt="Alt text" title="git_checkout">                </div>                <div class="image-caption">git_checkout</div>            </figure></li></ul></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h4 id=&quot;git-clean-n&quot;&gt;&lt;a href=&quot;#git-clean-n&quot; class=&quot;headerlink&quot; title=&quot;git clean -n&quot;&gt;&lt;/a&gt;git clean -n&lt;/h4&gt;&lt;p&gt;是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真
+      
+    
+    </summary>
+    
+      <category term="git" scheme="https://www.sakuraus.cn/categories/git/"/>
+    
+    
+      <category term="git" scheme="https://www.sakuraus.cn/tags/git/"/>
+    
+  </entry>
   
   <entry>
     <title>浅入浅出Mysql Innodb Mvcc</title>
