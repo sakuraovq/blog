@@ -32,7 +32,7 @@
 <meta property="og:description" content="git clean -n是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真正的删除文件, 只是一个提醒 git clean -f删除当前目录下所有没有track过的文件. 他不会删除.gitignore文件里面指定的文件夹和文件, 不管这些文件有没有被track过 git clean -df删除当前目录下没有被track过的文件和文件夹 回到最新提交的版本git reset –har">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/git_checkout.png">
-<meta property="og:updated_time" content="2019-02-23T02:22:56.830Z">
+<meta property="og:updated_time" content="2019-02-23T02:28:02.464Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于git clean 的用法">
 <meta name="twitter:description" content="git clean -n是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真正的删除文件, 只是一个提醒 git clean -f删除当前目录下所有没有track过的文件. 他不会删除.gitignore文件里面指定的文件夹和文件, 不管这些文件有没有被track过 git clean -df删除当前目录下没有被track过的文件和文件夹 回到最新提交的版本git reset –har">
@@ -209,15 +209,20 @@
 <h3 id="回到最新提交的版本"><a href="#回到最新提交的版本" class="headerlink" title="回到最新提交的版本"></a>回到最新提交的版本</h3><p>git reset –hard</p>
 <blockquote>
 <ul>
-<li>经常合并父级分支 或者同级分支经常 容易出 checkout 检出失败的问题<br>可以用过 git clean -df 删除 错误的 文件 <figure class="image-bubble">
+<li>经常合并父级分支 或者同级分支经常 容易出 checkout 检出失败的问题 </li>
+<li>警告: git clean 删除你所有无路径的文件/目录,不能撤消。<br>有时只是 clean -f 没有帮助。 如果你有未跟踪的目录，-d选项也需要：</li>
+</ul>
+</blockquote>
+<pre><code>git reset --hard HEAD
+git clean -f -d
+git pull
+</code></pre><figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
                     <img src="https://raw.githubusercontent.com/fanyinjiang/markdownImage/master/git_checkout.png" alt="Alt text" title="git_checkout">
                 </div>
                 <div class="image-caption">git_checkout</div>
-            </figure></li>
-</ul>
-</blockquote>
+            </figure>
 
         </div>
 
@@ -226,7 +231,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2019-02-23T02:22:56.830Z" itemprop="dateUpdated">2019-02-23 10:22:56</time>
+    最后更新时间：<time datetime="2019-02-23T02:28:02.464Z" itemprop="dateUpdated">2019-02-23 10:28:02</time>
 </span><br>
 
 
