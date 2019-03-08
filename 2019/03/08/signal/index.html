@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2019/03/08/signal/">
+    
+    
+    <title>为你的server 安装上信号处理吧 | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="signal">
+    <meta name="description" content="signal 信号 信号是 UNIX 操作系统特有的 IPC(进程间通信) 方式     很多服务端程序都是 后台运行的 那么我们有一天想要更新上线 如何通知到后台运行的程序呢那么发送信号是一种比较好的方式  1~15号信号为常用信号  用 kill 发起信号  我下面科普几种常用的  0=SIG_DFL 默认信号   使用场景: 通常用于 检测进程是否存在  2=SIGINT 这个信号通常是 C">
+<meta name="keywords" content="signal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为你的server 安装上信号处理吧">
+<meta property="og:url" content="https://www.sakuraus.cn/2019/03/08/signal/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="signal 信号 信号是 UNIX 操作系统特有的 IPC(进程间通信) 方式     很多服务端程序都是 后台运行的 那么我们有一天想要更新上线 如何通知到后台运行的程序呢那么发送信号是一种比较好的方式  1~15号信号为常用信号  用 kill 发起信号  我下面科普几种常用的  0=SIG_DFL 默认信号   使用场景: 通常用于 检测进程是否存在  2=SIGINT 这个信号通常是 C">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-08T06:32:23.258Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为你的server 安装上信号处理吧">
+<meta name="twitter:description" content="signal 信号 信号是 UNIX 操作系统特有的 IPC(进程间通信) 方式     很多服务端程序都是 后台运行的 那么我们有一天想要更新上线 如何通知到后台运行的程序呢那么发送信号是一种比较好的方式  1~15号信号为常用信号  用 kill 发起信号  我下面科普几种常用的  0=SIG_DFL 默认信号   使用场景: 通常用于 检测进程是否存在  2=SIGINT 这个信号通常是 C">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">为你的server 安装上信号处理吧</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">为你的server 安装上信号处理吧</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-03-08T06:32:23.258Z" itemprop="datePublished" class="page-time">
+  2019-03-08
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/php/">php</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/php/linux/">linux</a></li></ul></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#signal-信号"><span class="post-toc-number">1.</span> <span class="post-toc-text">signal 信号</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#php-处理-Unix-信号"><span class="post-toc-number">2.</span> <span class="post-toc-text">php 处理 Unix 信号</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#参考"><span class="post-toc-number">3.</span> <span class="post-toc-text">参考</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#下面附上基础的-master-worker-处理模型代码"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">下面附上基础的 master-worker 处理模型代码</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-signal" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">为你的server 安装上信号处理吧</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-03-08 14:32:23" datetime="2019-03-08T06:32:23.258Z" itemprop="datePublished">2019-03-08</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/php/">php</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/php/linux/">linux</a></li></ul></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="signal-信号"><a href="#signal-信号" class="headerlink" title="signal 信号"></a>signal 信号</h2><blockquote>
+<p>信号是 UNIX 操作系统特有的 IPC(进程间通信) 方式 </p>
+</blockquote>
+<p>  很多服务端程序都是 后台运行的 那么我们有一天想要更新上线 如何通知到后台运行的程序呢<br>那么发送信号是一种比较好的方式<br>  1~15号信号为常用信号<br>  用 kill 发起信号<br>  我下面科普几种常用的</p>
+<ul>
+<li><p>0=SIG_DFL 默认信号 </p>
+<p> 使用场景: 通常用于 检测进程是否存在</p>
+</li>
+<li><p>2=SIGINT 这个信号通常是 Ctrl+C 发出的信号</p>
+<p>  使用场景: 在协程通信中 通常使用 <strong>channel</strong> 管道通信 在高并发情况下  <strong>channel</strong> 流动数据也是非常多<br>  如果不小心 <strong>Ctrl+C</strong> 结束了允许中的server 那么正常情况 <strong>channel</strong>中未传递完的数据将被丢失,这种情况是我们不运行的<br>  那么有什么解决方案呢 , 我们就可以为我们的服务 装上信号处理 监听退出信号<br>  然后把channel中未传递完的方式可以放在 <strong>消息队列</strong>中服务,恢复在读取到 <strong>channel</strong>中 (这个来自360面试题解答)</p>
+</li>
+<li><p>9=SIGKILL 强制结束程序(危险) 通常我们是 用kill -9 pid 发出的</p>
+<p>  使用场景: 用来立即结束程序的运行.<strong>本信号不能被阻塞、处理和忽略</strong>。<br>  如果管理员发现某个进程终止不了，可尝试发送这个信号。</p>
+</li>
+<li><p>10=SIGUSR1 留给用户的</p>
+<p>  使用场景: 我们可以监听这个信号 然后完成特定操作<br>  比如 <a href="https://swoole.com" target="_blank" rel="noopener">swoole</a> 监听这个信号来重启 所有worker</p>
+</li>
+<li><p>12=SIGUSR2  留给用户的</p>
+<p>  使用场景: 我们可以监听这个信号 然后完成特定操作<br>  比如 <a href="https://swoole.com" target="_blank" rel="noopener">swoole</a> 监听这个信号来重启 所有taskWorker</p>
+</li>
+<li>15=SIGTERM  程序结束(terminate)信号, 与<strong>SIGKILL不同的是该信号可以被阻塞和处理</strong>。<br>  使用场景: 通常用来要求程序自己正常退出，这是一种<strong>柔性</strong>的关闭服务方式,<br>  shell命令kill缺省产生这个信号。如果进程终止不了，我们才会尝试SIGKILL。</li>
+</ul>
+<h2 id="php-处理-Unix-信号"><a href="#php-处理-Unix-信号" class="headerlink" title="php 处理 Unix 信号"></a>php 处理 Unix 信号</h2><blockquote>
+<p>下面介绍一种使用  pcntl 进程扩展 监听信号 实现的两种方式</p>
+</blockquote>
+<p>   PHP官方的pcntl_signal性能极差<br>   很多纯PHP开发的后端框架中都使用了pcntl扩展提供的信号处理函数pcntl_signal，实际上这个函数的性能是很差的。首先看一段示例代码：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>     </span><br><span class="line">     <span class="keyword">declare</span>(ticks = <span class="number">1</span>);</span><br><span class="line">     pcntl_signal(SIGINT, <span class="string">'signalHandler'</span>, <span class="keyword">false</span>);</span><br><span class="line">    </span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">      * 处理信号</span></span><br><span class="line"><span class="comment">      * <span class="doctag">@param</span> int $sig 信号</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">signalHandler</span><span class="params">($sig)</span></span></span><br><span class="line"><span class="function">      </span>&#123;</span><br><span class="line">         <span class="keyword">switch</span> ($sig) &#123;</span><br><span class="line">             <span class="keyword">case</span> SIGINT:</span><br><span class="line">                   <span class="keyword">echo</span> <span class="string">"\r\n"</span> . <span class="string">' Ctrl+C 退出了'</span>;</span><br><span class="line">                 <span class="keyword">exit</span>;</span><br><span class="line">                 <span class="keyword">break</span>;           </span><br><span class="line">             <span class="keyword">default</span>:</span><br><span class="line">                 <span class="comment">// 处理所有其他信号</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码在执行<strong>pcntl_signal</strong>前，<br>先加入了<strong>declare(ticks = 1)</strong>。因为PHP的函数无法<strong>直接注册到操作系统信号设置</strong>中<br>，所以<strong>pcntl</strong>信号需要依赖tick机制。通过查看<strong>pcntl.c</strong>的源码实现发现。<br><strong>pcntl_signal</strong>的实现原理是，触发信号后先将信号加入一个队列中<br>。然后在PHP的ticks回调函数中不断检查是否有信号，<br>如果有信号就执行PHP中指定的回调函数，如果没有则跳出函数。<br>下面是C 的代码<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PHP_MINIT_FUNCTION(pcntl)</span><br><span class="line">&#123;</span><br><span class="line">	php_register_signal_constants(INIT_FUNC_ARGS_PASSTHRU);</span><br><span class="line">	php_pcntl_register_errno_constants(INIT_FUNC_ARGS_PASSTHRU);</span><br><span class="line">	php_add_tick_function(pcntl_signal_dispatch TSRMLS_CC);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们先看看<strong>pcntl_signal_dispatch()</strong> 怎么实现的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pcntl_signal_dispatch</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//.... 这里略去一部分代码，queue即是信号队列</span></span><br><span class="line">	<span class="keyword">while</span> (<span class="built_in">queue</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> ((handle = zend_hash_index_find(&amp;PCNTL_G(php_signal_table), <span class="built_in">queue</span>-&gt;signo)) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">			ZVAL_NULL(&amp;retval);</span><br><span class="line">			ZVAL_LONG(&amp;param, <span class="built_in">queue</span>-&gt;signo);</span><br><span class="line"></span><br><span class="line">			<span class="comment">/* Call php signal handler - Note that we do not report errors, and we ignore the return value */</span></span><br><span class="line">			<span class="comment">/* <span class="doctag">FIXME:</span> this is probably broken when multiple signals are handled in this while loop (retval) */</span></span><br><span class="line">			<span class="comment">/* 调用用户注册的回调函数 */</span></span><br><span class="line">			call_user_function(EG(function_table), <span class="literal">NULL</span>, handle, &amp;retval, <span class="number">1</span>, &amp;param TSRMLS_CC);</span><br><span class="line">			zval_ptr_dtor(&amp;param);</span><br><span class="line">			zval_ptr_dtor(&amp;retval);</span><br><span class="line">		&#125;</span><br><span class="line">		next = <span class="built_in">queue</span>-&gt;next;</span><br><span class="line">		<span class="built_in">queue</span>-&gt;next = PCNTL_G(spares);</span><br><span class="line">		PCNTL_G(spares) = <span class="built_in">queue</span>;</span><br><span class="line">		<span class="built_in">queue</span> = next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就存在一个比较严重的性能问题，大家都知道PHP的ticks=1表示每执行1行PHP代码就回调此函数。实际上大部分时间都没有信号产生，但ticks的函数一直会执行。<br>如果一个服务器程序1秒中接收1000次请求，平均每个请求要执行1000行PHP代码。<br>那么PHP的pcntl_signal，就带来了额外的 1000 * 1000，也就是100万次空的函数调用。<br>这样会浪费大量的CPU资源。</p>
+<p><strong>比较好的做法是去掉ticks，转而使用pcntl_signal_dispatch，在代码循环中自行处理信号。</strong><br>我就直接上代码了</p>
+<p>我们自己实现一个 <strong>ticks</strong> 利用<strong>pcntl_signal_dispatch</strong>调度</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>     </span><br><span class="line">    pcntl_signal(SIGUSR1, <span class="string">'signalHandler'</span>, <span class="keyword">false</span>); <span class="comment">// 10 自定义信号</span></span><br><span class="line">    $status = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 当发现信号队列,一旦发现有信号就会触发进程绑定事件回调</span></span><br><span class="line">        pcntl_signal_dispatch();</span><br><span class="line">        <span class="comment">// 当信号到达之后就会被中断</span></span><br><span class="line">        $pid = pcntl_wait($status);     </span><br><span class="line">        <span class="comment">// to do something 可以监听 进程是否正常退出... 然后做后续维护处理       </span></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">          if ($pid &gt; 0 &amp;&amp; $pid != $masterPid &amp;&amp; !pcntl_wifexited($status)) &#123;</span></span><br><span class="line"><span class="comment">                // 如果退出 重新拉起</span></span><br><span class="line"><span class="comment">                $this-&gt;start(1);</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">        */</span>                  </span><br><span class="line">            </span><br><span class="line">        <span class="comment">// 进程重启的过程当中会有新的信号过来,如果没有调用pcntl_signal_dispatch,信号不会被处理</span></span><br><span class="line">        <span class="comment">// (解决并发信号)</span></span><br><span class="line">        pcntl_signal_dispatch();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">     <span class="comment">/**</span></span><br><span class="line"><span class="comment">      * 处理信号</span></span><br><span class="line"><span class="comment">      * <span class="doctag">@param</span> int $sig 信号</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">signalHandler</span><span class="params">($sig)</span></span></span><br><span class="line"><span class="function">      </span>&#123;</span><br><span class="line">         <span class="keyword">switch</span> ($sig) &#123;</span><br><span class="line">             <span class="keyword">case</span> SIGUSR1:</span><br><span class="line">                 <span class="comment">// <span class="doctag">TODO:</span>: 重启worker</span></span><br><span class="line">                 <span class="keyword">echo</span> <span class="string">"重新起worker"</span>;</span><br><span class="line">                 <span class="keyword">break</span>;                  </span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>swoole中因为底层是C实现的，信号处理不受PHP的影响。 有兴趣大家可以去看看<br>  swoole使用了目前Linux系统中最先进的signalfd来处理信号，几乎是没有任何额外消耗的。</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p> <a href="http://rango.swoole.com/archives/364" target="_blank" rel="noopener">PHP官方的pcntl_signal性能极差</a></p>
+<h3 id="下面附上基础的-master-worker-处理模型代码"><a href="#下面附上基础的-master-worker-处理模型代码" class="headerlink" title="下面附上基础的 master-worker 处理模型代码"></a>下面附上基础的 master-worker 处理模型代码</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ab压测 ab -n 100000 -c 10000 -k http://127.0.0.1:8000</span></span><br><span class="line"><span class="comment"> * 批量杀 ps -ef | grep Event.php | grep -v grep | awk '&#123;print $2&#125;' | xargs kill -9</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Event</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> MESSAGE = <span class="string">'message'</span>;       <span class="comment">// 消息事件</span></span><br><span class="line">    <span class="keyword">const</span> CONNECT = <span class="string">'connect'</span>;       <span class="comment">// 连接事件</span></span><br><span class="line">    <span class="keyword">const</span> CLOSE = <span class="string">'close'</span>;           <span class="comment">// 连接关闭时间</span></span><br><span class="line">    <span class="keyword">const</span> SHUTDOWN = <span class="string">'shutdown'</span>;     <span class="comment">// 服务终止事件</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * master 进程ID</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> $masterPid;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * worker　count</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> int</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> $workerNum = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 监听服务地址</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> $severAddr = <span class="string">'tcp://127.0.0.1:8000'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 工作进程pid</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $workerPids = [];</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 绑定的事件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $event = [];</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Event constructor.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> string $listenAddress  监听地址</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $workerNum         worker 个数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(string $listenAddress, $workerNum = <span class="number">2</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;severAddr = $listenAddress;</span><br><span class="line">        <span class="comment">// 获取masterPid</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;masterPid = posix_getpid();</span><br><span class="line">        <span class="comment">// worker num</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;workerNum = $workerNum;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 绑定事件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> string $eventType</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> callable $callback</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> \Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">on</span><span class="params">(string $eventType, callable $callback)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> ($eventType) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">self</span>::MESSAGE: <span class="comment">// 消息触发事件</span></span><br><span class="line">                <span class="keyword">$this</span>-&gt;event[<span class="keyword">self</span>::MESSAGE] = $callback;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">self</span>::CONNECT: <span class="comment">// 连接事件</span></span><br><span class="line">                <span class="keyword">$this</span>-&gt;event[<span class="keyword">self</span>::CONNECT] = $callback;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">self</span>::CLOSE:  <span class="comment">// 关闭连接事件</span></span><br><span class="line">                <span class="keyword">$this</span>-&gt;event[<span class="keyword">self</span>::CLOSE] = $callback;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">self</span>::SHUTDOWN: <span class="comment">// 终止事件</span></span><br><span class="line">                <span class="keyword">$this</span>-&gt;event[<span class="keyword">self</span>::SHUTDOWN] = $callback;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> \InvalidArgumentException(<span class="string">'undefined event type'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 触发事件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> string $eventType</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> mixed ...$params</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> mixed|null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">trigger</span><span class="params">(string $eventType, ...$params)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $result = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;event[$eventType])) &#123;</span><br><span class="line">            $result = call_user_func(<span class="keyword">$this</span>-&gt;event[$eventType], ...$params);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> $result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 启动服务</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// fork worker</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;fork(<span class="keyword">$this</span>-&gt;workerNum);</span><br><span class="line">        <span class="comment">// 处理 linux 信号</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;signalDispatch();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * fork worker</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $workerNum 启用worker个数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">fork</span><span class="params">($workerNum)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $workerNum; $i++) &#123;</span><br><span class="line">            $pid = pcntl_fork();</span><br><span class="line">            <span class="comment">// 创建失败</span></span><br><span class="line">            <span class="keyword">if</span> ($pid == <span class="number">-1</span>) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;trigger(<span class="keyword">self</span>::SHUTDOWN);</span><br><span class="line">                <span class="keyword">die</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> ($pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//父进程空间，返回子进程id</span></span><br><span class="line">                <span class="keyword">$this</span>-&gt;workerPids[$pid] = $pid;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// worker空间</span></span><br><span class="line">            <span class="keyword">if</span> ($pid == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;ePoll();</span><br><span class="line">                <span class="comment">// 一定要结束不然 会fork 嵌套</span></span><br><span class="line">                <span class="keyword">die</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 信号调度</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $status</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">signalDispatch</span><span class="params">($status = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 注册信号事件回调,是不会自动执行的</span></span><br><span class="line"></span><br><span class="line">        pcntl_signal(SIGTERM, [<span class="keyword">$this</span>, <span class="string">'signalHandler'</span>], <span class="keyword">false</span>); <span class="comment">// 15 终止信号</span></span><br><span class="line">        pcntl_signal(SIGINT, [<span class="keyword">$this</span>, <span class="string">'signalHandler'</span>], <span class="keyword">false</span>);  <span class="comment">// 2 Ctrl+C 信号</span></span><br><span class="line">        pcntl_signal(SIGUSR1, [<span class="keyword">$this</span>, <span class="string">'signalHandler'</span>], <span class="keyword">false</span>); <span class="comment">// 10 自定义信号(重启所有worker)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="comment">// 当发现信号队列,一旦发现有信号就会触发进程绑定事件回调</span></span><br><span class="line">            pcntl_signal_dispatch();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 当信号到达之后就会被中断</span></span><br><span class="line">            $pid = pcntl_wait($status);</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">              // 检测 子进程是否异常退出</span></span><br><span class="line"><span class="comment">              if ($pid &gt; 0 &amp;&amp; $pid != $this-&gt;masterPid &amp;&amp; !pcntl_wifexited($status)) &#123;</span></span><br><span class="line"><span class="comment">              // 如果退出 重新拉起</span></span><br><span class="line"><span class="comment">              $this-&gt;fork(1);</span></span><br><span class="line"><span class="comment">              &#125;</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 进程重启的过程当中会有新的信号过来,如果没有调用pcntl_signal_dispatch,信号不会被处理(解决并发信号)</span></span><br><span class="line">            pcntl_signal_dispatch();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理主进程信号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $sig 信号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">signalHandler</span><span class="params">($sig)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> ($sig) &#123;</span><br><span class="line">            <span class="keyword">case</span> SIGUSR1: <span class="comment">// reload workers</span></span><br><span class="line">                <span class="keyword">echo</span> <span class="string">'worker reloading'</span> . PHP_EOL;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;reload();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> SIGTERM: <span class="comment">// 15 终止信号</span></span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"\r\n"</span> . <span class="string">' 程序退出了'</span>;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;kill();</span><br><span class="line">                <span class="keyword">exit</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> SIGINT: <span class="comment">// 2 Ctrl+C</span></span><br><span class="line">                <span class="comment">//处理SIGHUP信号 Ctrl+C 退出信号</span></span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"\r\n"</span> . <span class="string">' Ctrl+C 退出了'</span>;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;kill();</span><br><span class="line">                <span class="keyword">exit</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="comment">// 处理所有其他信号</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重启 所有worker</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">reload</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;kill();</span><br><span class="line">        <span class="comment">// 在启动新的worker</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;fork(<span class="keyword">$this</span>-&gt;workerNum);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 杀掉所有worker</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">kill</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 先杀掉worker</span></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">$this</span>-&gt;workerPids <span class="keyword">as</span> $pid) &#123;</span><br><span class="line">            posix_kill($pid, SIGKILL);</span><br><span class="line">            <span class="keyword">unset</span>(<span class="keyword">$this</span>-&gt;workerPids[$pid]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建事件监听</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">ePoll</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 创建资源上下文 环境 配置端口监听复用</span></span><br><span class="line">        $context = stream_context_create([</span><br><span class="line">            <span class="string">'socket'</span> =&gt; [</span><br><span class="line">                <span class="string">'so_reuseport'</span> =&gt; <span class="number">1</span>, <span class="comment">// 采用端口复用监听,系统会负载均衡 分发给worker请求,还不会出现惊群现象</span></span><br><span class="line">            ],</span><br><span class="line">        ]);</span><br><span class="line"></span><br><span class="line">        $serverSocket = stream_socket_server(<span class="keyword">$this</span>-&gt;severAddr, $errNo, $errStr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, $context);</span><br><span class="line"></span><br><span class="line">        swoole_event_add($serverSocket, <span class="keyword">$this</span>-&gt;listenCallback());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回 服务端回调闭包</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Closure</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">listenCallback</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">($fd)</span> </span>&#123;</span><br><span class="line">            $client = stream_socket_accept($fd);</span><br><span class="line">            <span class="comment">// 新的连接</span></span><br><span class="line">            <span class="keyword">$this</span>-&gt;trigger(<span class="keyword">self</span>::CONNECT, $client);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;receive($client);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 监听客户端socket 可读写</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $clientSocket</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">receive</span><span class="params">($clientSocket)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        swoole_event_add($clientSocket, <span class="function"><span class="keyword">function</span> <span class="params">($fd)</span> </span>&#123;</span><br><span class="line">            $data = <span class="keyword">$this</span>-&gt;fRead($fd);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;trigger(<span class="keyword">self</span>::MESSAGE, $fd, $data);</span><br><span class="line">            <span class="comment">// 关闭客户端</span></span><br><span class="line">            <span class="keyword">$this</span>-&gt;close($fd);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 读取数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $fd</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $size</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">fRead</span><span class="params">($fd, $size = <span class="number">8192</span>)</span>: <span class="title">string</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $data = fread($fd, $size);</span><br><span class="line">        <span class="keyword">return</span> $data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭client socket</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $fd</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">close</span><span class="params">($fd)</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;trigger(<span class="keyword">self</span>::CLOSE, $fd);</span><br><span class="line">        <span class="comment">// socket处理完成后，从epoll事件中移除socket</span></span><br><span class="line">        swoole_event_del($fd);</span><br><span class="line">        fclose($fd);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$worker = <span class="keyword">new</span> Event(<span class="string">'tcp://127.0.0.1:8000'</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">$worker-&gt;on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($fd, $data)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    $content = <span class="string">"hello world"</span>;</span><br><span class="line">    $httpResponse = <span class="string">"HTTP/1.1 200 OK\r\n"</span>;</span><br><span class="line">    $httpResponse .= <span class="string">"Content-Type: text/html;charset=UTF-8\r\n"</span>;</span><br><span class="line">    $httpResponse .= <span class="string">"Connection: keep-alive\r\n"</span>;      <span class="comment">//连接保持</span></span><br><span class="line">    $httpResponse .= <span class="string">"Server: php socket server\r\n"</span>;</span><br><span class="line">    $httpResponse .= <span class="string">"Content-length: "</span> . strlen($content) . <span class="string">"\r\n\r\n"</span>;</span><br><span class="line">    $httpResponse .= $content;</span><br><span class="line">    fwrite($fd, $httpResponse);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$worker-&gt;on(<span class="string">'connect'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($socket)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//echo '新的连接' . $socket . PHP_EOL;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$worker-&gt;on(<span class="string">'close'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($socket)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// echo '连接关闭' . $socket . PHP_EOL;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$worker-&gt;on(<span class="string">'shutdown'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"监听异常退出"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">$worker-&gt;start();</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-03-08T06:32:23.258Z" itemprop="dateUpdated">2019-03-08 14:32:23</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2019/03/08/signal/" target="_blank" rel="external">https://www.sakuraus.cn/2019/03/08/signal/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/signal/">signal</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2019/03/08/signal/&title=《为你的server 安装上信号处理吧》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2019/03/08/signal/&title=《为你的server 安装上信号处理吧》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2019/03/08/signal/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《为你的server 安装上信号处理吧》 — don't be evil&url=https://www.sakuraus.cn/2019/03/08/signal/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2019/03/08/signal/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/02/23/git_clean/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">关于git clean 的用法</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ovo 蟹蟹
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018 - 2019</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2019/03/08/signal/&title=《为你的server 安装上信号处理吧》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2019/03/08/signal/&title=《为你的server 安装上信号处理吧》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2019/03/08/signal/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《为你的server 安装上信号处理吧》 — don't be evil&url=https://www.sakuraus.cn/2019/03/08/signal/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2019/03/08/signal/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABwklEQVR42u3aSWrFMBAFwH//SzvbQLD8ujV8E0orY4xc2jQ96POJ1/Vr/X2ffHm352fHwsXFneZew3X3zXiH5MDj/W93w8XFPcgdB5oE0TtebsDFxX0/N09l8uPh4uL+D2410ekFSlxc3G9xk+Inp+fdjI21Gi4u7gQ3T032PW/p7+Li4ra4V3H1ipm8zfrwd1xc3CPcXoIy8743iMXFxT3JrQ48qo3UpNTJgyMuLu4ZbvXyRLWA6bVZoxQHFxd3G7d3Gat6qWI+ROLi4p7kzowxesOVZHwS1Wq4uLibuUkYGoenmZZrcoyoT4OLi7uIm29dDUzjN70mCy4u7hlu75czP5sponBxcc9we0PTPMz1At9D3MXFxd3MnbknOTNk7V0PxcXFPclN0pdeGOoNZR/SIFxc3C9xe+3OfFibX8x6qNVwcXGPcKvNzR1l0sM3uLi4m7lXcVWPUR3NNuswXFzcpdxec6RX0vSKouZhcHFxp7m94JWHrWoyVLhBhouLu5nbu1pRTVYW12q4uLiv4eaBadUwBhcX9/3cXnt01YUMXFzck9xVg9I89clbLbi4uOe51VCSEKsjnLxRi4uLu5n7AxXgUsFZ8DRrAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<!-- <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
