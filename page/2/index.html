@@ -168,13 +168,13 @@
     <ul class="post-list">
     
         <li class="post-list-item fade">
-            <article id="post-markdown-images" class="article-card article-type-post" itemprop="blogPost">
+            <article id="post-go_panic" class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
         <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
 
         
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/">github</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/markdown/">markdown</a></li></ul></li></ul>
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/golang/">golang</a></li></ul>
 
 
 
@@ -185,7 +185,7 @@
 
   
     <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2018/09/02/markdown-images/">使用github存放markdown所需图片</a>
+      <a class="post-title-link" href="/2018/09/02/go_panic/">golang入门之捕捉panic</a>
     </h3>
   
 
@@ -195,75 +195,26 @@
     <div class="post-content" id="post-content" itemprop="postContent">
 
     
-        github存储图片
+        
 
-利用github存储图片，在markdown引用图片链接地址 步骤如下：
-自己创建一个公有github仓库 例如 fanyinjiang/markdownImage
-先生成 .md 文件
+在其他语言捕捉错误一般是用 try{}catch(E e){}1234567&lt;?phptry&#123;    &#125;catch (Exception $e)&#123;    // do something...&#125;
 
 
 
 
-4.点 download 按钮，在地址栏可以复制图片地址，或者在Download按钮上直接右键 “复制链接地址”
-拷贝链接地址https://raw.githubuserco...
+
+捕捉错误很有必要因为你可能不想因为一个小bug导致整个Application 崩溃
+捕捉错误记录日志 能有效观察 正式环境的运行情况1234...
     
 
-        <a href="/2018/09/02/markdown-images/" class="post-more waves-effect waves-button">
+        <a href="/2018/09/02/go_panic/" class="post-more waves-effect waves-button">
             阅读全文…
         </a>
     </div>
     
     <div class="post-footer">
         
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/markdown/">markdown</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-微服务架构重要部件" class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2018/09/02/微服务架构重要部件/">微服务架构理论-基础与重要部件</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        内容介绍微服务基础客户端如何访问这些服务（api Gateway）
-
-传统的开发方式，所有的服务都是本地的，UI可以直接调用，现在按功能拆分成独立的服务，跑在独立的运行环境中。客户端UI如何访问他的？后台有N个服务，前台就需要记住管理N个服务，一个服务下线/更新/升级，前台就要重新部署，这明显不服务我们拆分的理念，特别当前台是移动应用的时候，通常业务变化的节奏更快。另外，N个小服务的调用也是...
-    
-
-        <a href="/2018/09/02/微服务架构重要部件/" class="post-more waves-effect waves-button">
-            阅读全文…
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li></ul>
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
 
     </div>
     
@@ -330,6 +281,54 @@ RPC...
         </li>
     
         <li class="post-list-item fade">
+            <article id="post-微服务架构重要部件" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2018/09/02/微服务架构重要部件/">微服务架构理论-基础与重要部件</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        内容介绍微服务基础客户端如何访问这些服务（api Gateway）
+
+传统的开发方式，所有的服务都是本地的，UI可以直接调用，现在按功能拆分成独立的服务，跑在独立的运行环境中。客户端UI如何访问他的？后台有N个服务，前台就需要记住管理N个服务，一个服务下线/更新/升级，前台就要重新部署，这明显不服务我们拆分的理念，特别当前台是移动应用的时候，通常业务变化的节奏更快。另外，N个小服务的调用也是...
+    
+
+        <a href="/2018/09/02/微服务架构重要部件/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-微服务详解" class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
@@ -370,6 +369,62 @@ RPC...
     <div class="post-footer">
         
 	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-markdown-images" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/">github</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/markdown/">markdown</a></li></ul></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2018/09/02/markdown-images/">使用github存放markdown所需图片</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        github存储图片
+
+利用github存储图片，在markdown引用图片链接地址 步骤如下：
+自己创建一个公有github仓库 例如 fanyinjiang/markdownImage
+先生成 .md 文件
+
+
+
+
+4.点 download 按钮，在地址栏可以复制图片地址，或者在Download按钮上直接右键 “复制链接地址”
+拷贝链接地址https://raw.githubuserco...
+    
+
+        <a href="/2018/09/02/markdown-images/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/markdown/">markdown</a></li></ul>
 
     </div>
     
