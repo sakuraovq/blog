@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2018/09/02/go_panic/">
+    
+    
+    <title>golang入门之捕捉panic | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="golang">
+    <meta name="description" content="在其他语言捕捉错误一般是用 try{}catch(E e){}1234567&amp;lt;?phptry&amp;#123;    &amp;#125;catch (Exception $e)&amp;#123;    // do something...&amp;#125;      捕捉错误很有必要因为你可能不想因为一个小bug导致整个Application 崩溃 捕捉错误记录日志 能有效观察 正式环境的运行情况1234567">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang入门之捕捉panic">
+<meta property="og:url" content="https://www.sakuraus.cn/2018/09/02/go_panic/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="在其他语言捕捉错误一般是用 try{}catch(E e){}1234567&amp;lt;?phptry&amp;#123;    &amp;#125;catch (Exception $e)&amp;#123;    // do something...&amp;#125;      捕捉错误很有必要因为你可能不想因为一个小bug导致整个Application 崩溃 捕捉错误记录日志 能有效观察 正式环境的运行情况1234567">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-04T16:23:15.663Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="golang入门之捕捉panic">
+<meta name="twitter:description" content="在其他语言捕捉错误一般是用 try{}catch(E e){}1234567&amp;lt;?phptry&amp;#123;    &amp;#125;catch (Exception $e)&amp;#123;    // do something...&amp;#125;      捕捉错误很有必要因为你可能不想因为一个小bug导致整个Application 崩溃 捕捉错误记录日志 能有效观察 正式环境的运行情况1234567">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">golang入门之捕捉panic</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">golang入门之捕捉panic</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished" class="page-time">
+  2018-09-02
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/golang/">golang</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+
+<article id="post-go_panic" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">golang入门之捕捉panic</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/golang/">golang</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<ul>
+<li>在其他语言捕捉错误一般是用 try{}catch(E e){}<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;<span class="keyword">catch</span> (<span class="keyword">Exception</span> $e)&#123;</span><br><span class="line">    <span class="comment">// do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>捕捉错误很有必要因为你可能不想因为一个小bug导致整个Application 崩溃</li>
+<li>捕捉错误记录日志 能有效观察 正式环境的运行情况<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/json"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	UserName <span class="keyword">string</span> <span class="string">`json:"user_name"`</span></span><br><span class="line">	Age      <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	user1 := &amp;User&#123;</span><br><span class="line">		UserName: <span class="string">"zheng"</span>,</span><br><span class="line">		Age:      <span class="number">22</span>,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="built_in">panic</span>(<span class="string">"error"</span>)</span><br><span class="line">	str, _ := json.Marshal(user1)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">string</span>(str)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> data <span class="keyword">string</span></span><br><span class="line">	data = test()</span><br><span class="line">  </span><br><span class="line">	fmt.Println(data)</span><br><span class="line">	<span class="keyword">var</span> user1 <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	err := json.Unmarshal([]<span class="keyword">byte</span>(data), &amp;user1)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">"user2 is"</span>, user1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>这段代码我正在打包和解析 json 数据 我在 <code>test()</code>函数中手动panic 然后 <code>defer</code>在调用完当前函数后在执行</li>
+<li>注意的是 <code>defer</code>必须写在 <code>panic</code>前面不然会报错</li>
+<li>手动 <code>panic</code> 是不推荐的坐发可以用记录日志的方式的逻辑处理 panic 主要是语法写错了这类的基础错误</li>
+<li>据说go 2.0版本会改进错误处理 golang fans 可以期待下(#^.^#) ,主要是支持泛型了 其他静态语言难找槽点了</li>
+</ul>
+</blockquote>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-05-04T16:23:15.663Z" itemprop="dateUpdated">2019-05-05 00:23:15</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2018/09/02/go_panic/" target="_blank" rel="external">https://www.sakuraus.cn/2018/09/02/go_panic/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/09/02/go_panic/&title=《golang入门之捕捉panic》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/09/02/go_panic/&title=《golang入门之捕捉panic》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/09/02/go_panic/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《golang入门之捕捉panic》 — don't be evil&url=https://www.sakuraus.cn/2018/09/02/go_panic/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/09/02/go_panic/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2019/02/23/git_clean/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">关于git clean 的用法</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/09/02/微服务RPC/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">微服务架构理论-RPC通讯调用</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ovo 蟹蟹
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018 - 2019</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2018/09/02/go_panic/&title=《golang入门之捕捉panic》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2018/09/02/go_panic/&title=《golang入门之捕捉panic》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2018/09/02/go_panic/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《golang入门之捕捉panic》 — don't be evil&url=https://www.sakuraus.cn/2018/09/02/go_panic/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2018/09/02/go_panic/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACOElEQVR42u3aS46DMBBFUfa/aVrqUaQ0cF+VE7Xt61FEAvFhUKqPjwOv83e9fn5d5Hrt3sFLhgwZ0zLO23W1FX7v+11kD+nzZciQsQODBNkaiTyz8xsZMmTIeN/i1V1pspgGdxkyZMjoBFyeDqZXZMiQISMtYu+DbKcY5iF7QC0uQ4aMCRm1wcB3Pn98viFDhox/zzgbi6R3o+562IkMGTKWZtynfZ3TDp3jGrzBF/y9DBkyJmd0ykhe6JKWWVqsXn4rQ4aMRRkkXKbf8obagMGADBkylmbw5KzTMkuDOEkT/yhiZciQsSiDA3j8TktifpgDVeQyZMjYgFFLB/kYIH1BxYArQ4aMJRjpVjrxjSd/cbNPhgwZGzA+sdGUVAu4Ry1+y5AhYyoGf/Sollz/eMfDK5AhQ8aiDJ6QxWc38Lc87B78QTJkyFiIUUsH0yv8en/MIEOGjB0YBJAWtLVEs3ZMTYYMGTswRr0D3lZLR6FoDzJkyFiUEbTgw2FA2oYjbDQekCFDxhKM2mEL3pJLf8kHmWjmKUOGjIUYD0evcDhOj4XxAx8PJBkyZCzNqCWI9y2zGmlUYSxDhoyVGGe4OmGxk0o+vEoZMmQszagdv0iPRKR/RkK5DBkydmPw8pUExNr1Yg6bVskyZMiYnFELsv1krlO+Xo4wZciQsT2DB2IyVEhD/OWeZciQISNsnNVeAU8ZW6mhDBkypmV0wmXaPhs1ipAhQ8Y+jE/0sr5zzKI135AhQ8YcjB8jS2qYiqol5AAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<!-- <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '_(:зゝ∠)_！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
