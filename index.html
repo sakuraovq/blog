@@ -168,6 +168,54 @@
     <ul class="post-list">
     
         <li class="post-list-item fade">
+            <article id="post-20190722-microservices" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2019-07-26 11:57:02" datetime="2019-07-26T03:57:02.779Z" itemprop="datePublished">2019-07-26</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2019/07/26/20190722-microservices/">怎样使用 PHP 实现微服务</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        怎样使用 PHP 实现微服务
+为什么要说服务治理   随着互联网浏览越来越大. 传统的 MVC 单一架构随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难.
+   我们必须采取措施,按应用拆分，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应...
+    
+
+        <a href="/2019/07/26/20190722-microservices/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoft/">Swoft</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-docker-machine" class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
@@ -328,105 +376,6 @@ Docker Machine 是一个工具，它允许你在虚拟宿主机上安装 Docker 
         </li>
     
         <li class="post-list-item fade">
-            <article id="post-Mysql-Mvcc" class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2019-05-05 00:23:15" datetime="2019-05-04T16:23:15.662Z" itemprop="datePublished">2019-05-05</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/mysql/">mysql</a></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2019/05/05/Mysql-Mvcc/">浅入浅出Mysql Innodb Mvcc</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        MVCC
-
-MVCC 翻译过来就是指 多版本控制
-
-
-多版本控制
-
-指的是一种提高并发的技术最高的数据库系统, 只有读与读之间可以并发,写与读,读与写,写与写都要阻塞.引入多版本之后,只有写与写之间会相互阻塞, 其他三种操作都可以并发,这样大大提升了Innodb并发度,在内部实现中，与Postgres在数据行上实现多版本不同，InnoDB是在undolog中实现的，通过undolog可以找回...
-    
-
-        <a href="/2019/05/05/Mysql-Mvcc/" class="post-more waves-effect waves-button">
-            阅读全文…
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mvcc/">Mvcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-Raft" class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2019-05-05 00:23:15" datetime="2019-05-04T16:23:15.662Z" itemprop="datePublished">2019-05-05</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/raft/">raft</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/raft/分布式/">分布式</a></li></ul></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2019/05/05/Raft/">Raft 算法译文</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        寻找一种易于理解的一致性算法（扩展版）摘要Raft 是一种为了管理复制日志的一致性算法。它提供了和 Paxos 算法相同的功能和性能，但是它的算法结构和 Paxos 不同，使得 Raft 算法更加容易理解并且更容易构建实际的系统。为了提升可理解性，Raft 将一致性算法分解成了几个关键模块，例如领导人选举、日志复制和安全性。同时它通过实施一个更强的一致性来减少需要考虑的状态的数量。从一个用户...
-    
-
-        <a href="/2019/05/05/Raft/" class="post-more waves-effect waves-button">
-            阅读全文…
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/raft/">raft</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
             <article id="post-docker-compose" class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
@@ -482,6 +431,105 @@ dockerfile是构建镜像的一个语法文件 类似shell 脚本 的语法 详�
         </li>
     
         <li class="post-list-item fade">
+            <article id="post-Raft" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2019-05-05 00:23:15" datetime="2019-05-04T16:23:15.662Z" itemprop="datePublished">2019-05-05</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/raft/">raft</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/raft/分布式/">分布式</a></li></ul></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2019/05/05/Raft/">Raft 算法译文</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        寻找一种易于理解的一致性算法（扩展版）摘要Raft 是一种为了管理复制日志的一致性算法。它提供了和 Paxos 算法相同的功能和性能，但是它的算法结构和 Paxos 不同，使得 Raft 算法更加容易理解并且更容易构建实际的系统。为了提升可理解性，Raft 将一致性算法分解成了几个关键模块，例如领导人选举、日志复制和安全性。同时它通过实施一个更强的一致性来减少需要考虑的状态的数量。从一个用户...
+    
+
+        <a href="/2019/05/05/Raft/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/raft/">raft</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-Mysql-Mvcc" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2019-05-05 00:23:15" datetime="2019-05-04T16:23:15.662Z" itemprop="datePublished">2019-05-05</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/mysql/">mysql</a></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2019/05/05/Mysql-Mvcc/">浅入浅出Mysql Innodb Mvcc</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        MVCC
+
+MVCC 翻译过来就是指 多版本控制
+
+
+多版本控制
+
+指的是一种提高并发的技术最高的数据库系统, 只有读与读之间可以并发,写与读,读与写,写与写都要阻塞.引入多版本之后,只有写与写之间会相互阻塞, 其他三种操作都可以并发,这样大大提升了Innodb并发度,在内部实现中，与Postgres在数据行上实现多版本不同，InnoDB是在undolog中实现的，通过undolog可以找回...
+    
+
+        <a href="/2019/05/05/Mysql-Mvcc/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mvcc/">Mvcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-inotfy" class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
@@ -522,55 +570,6 @@ inotify是Linux内核提供的一组系统调用，它可以监控文件系统�
     <div class="post-footer">
         
 	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/inotfy/">inotfy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swoole/">swoole</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-git_clean" class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2019-02-23 00:00:00" datetime="2019-02-22T16:00:00.000Z" itemprop="datePublished">2019-02-23</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/git/">git</a></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2019/02/23/git_clean/">关于git clean 的用法</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        git clean -n是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真正的删除文件, 只是一个提醒
-git clean -f删除当前目录下所有没有track过的文件. 他不会删除.gitignore文件里面指定的文件夹和文件, 不管这些文件有没有被track过
-git clean -df删除当前目录下没有被track过的文件和文件夹
-回到最新提交的版本git reset –...
-    
-
-        <a href="/2019/02/23/git_clean/" class="post-more waves-effect waves-button">
-            阅读全文…
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
 
     </div>
     

@@ -168,6 +168,55 @@
     <ul class="post-list">
     
         <li class="post-list-item fade">
+            <article id="post-git_clean" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2019-02-23 00:00:00" datetime="2019-02-22T16:00:00.000Z" itemprop="datePublished">2019-02-23</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/git/">git</a></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2019/02/23/git_clean/">关于git clean 的用法</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        git clean -n是一次clean的演习, 告诉你哪些文件会被删除. 记住他不会真正的删除文件, 只是一个提醒
+git clean -f删除当前目录下所有没有track过的文件. 他不会删除.gitignore文件里面指定的文件夹和文件, 不管这些文件有没有被track过
+git clean -df删除当前目录下没有被track过的文件和文件夹
+回到最新提交的版本git reset –...
+    
+
+        <a href="/2019/02/23/git_clean/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-go_panic" class="article-card article-type-post" itemprop="blogPost">
 
     <div class="post-meta">
@@ -215,6 +264,62 @@
     <div class="post-footer">
         
 	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-markdown-images" class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/">github</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/markdown/">markdown</a></li></ul></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2018/09/02/markdown-images/">使用github存放markdown所需图片</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        github存储图片
+
+利用github存储图片，在markdown引用图片链接地址 步骤如下：
+自己创建一个公有github仓库 例如 fanyinjiang/markdownImage
+先生成 .md 文件
+
+
+
+
+4.点 download 按钮，在地址栏可以复制图片地址，或者在Download按钮上直接右键 “复制链接地址”
+拷贝链接地址https://raw.githubuserco...
+    
+
+        <a href="/2018/09/02/markdown-images/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/markdown/">markdown</a></li></ul>
 
     </div>
     
@@ -369,62 +474,6 @@ RPC...
     <div class="post-footer">
         
 	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-markdown-images" class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2018-09-02 00:00:00" datetime="2018-09-01T16:00:00.000Z" itemprop="datePublished">2018-09-02</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/">github</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/github/markdown/">markdown</a></li></ul></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2018/09/02/markdown-images/">使用github存放markdown所需图片</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        github存储图片
-
-利用github存储图片，在markdown引用图片链接地址 步骤如下：
-自己创建一个公有github仓库 例如 fanyinjiang/markdownImage
-先生成 .md 文件
-
-
-
-
-4.点 download 按钮，在地址栏可以复制图片地址，或者在Download按钮上直接右键 “复制链接地址”
-拷贝链接地址https://raw.githubuserco...
-    
-
-        <a href="/2018/09/02/markdown-images/" class="post-more waves-effect waves-button">
-            阅读全文…
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/markdown/">markdown</a></li></ul>
 
     </div>
     

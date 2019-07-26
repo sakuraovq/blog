@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2019/07/26/20190722-microservices/">
+    
+    
+    <title>怎样使用 PHP 实现微服务 | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="Swoft,MicroService">
+    <meta name="description" content="怎样使用 PHP 实现微服务 为什么要说服务治理   随着互联网浏览越来越大. 传统的 MVC 单一架构随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难.    我们必须采取措施,按应用拆分，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构">
+<meta name="keywords" content="Swoft,MicroService">
+<meta property="og:type" content="article">
+<meta property="og:title" content="怎样使用 PHP 实现微服务">
+<meta property="og:url" content="https://www.sakuraus.cn/2019/07/26/20190722-microservices/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="怎样使用 PHP 实现微服务 为什么要说服务治理   随着互联网浏览越来越大. 传统的 MVC 单一架构随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难.    我们必须采取措施,按应用拆分，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/mico.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/abTesting.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/registerProvider.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/swoft-cloud/swoft-doc/2.x/zh-CN/ms/govern/../../image/ms/breaker_ext.png">
+<meta property="og:updated_time" content="2019-07-26T03:57:02.779Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="怎样使用 PHP 实现微服务">
+<meta name="twitter:description" content="怎样使用 PHP 实现微服务 为什么要说服务治理   随着互联网浏览越来越大. 传统的 MVC 单一架构随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难.    我们必须采取措施,按应用拆分，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/mico.jpg">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">怎样使用 PHP 实现微服务</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">怎样使用 PHP 实现微服务</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-07-26T03:57:02.779Z" itemprop="datePublished" class="page-time">
+  2019-07-26
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#怎样使用-PHP-实现微服务"><span class="post-toc-number">1.</span> <span class="post-toc-text">怎样使用 PHP 实现微服务</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#为什么要说服务治理"><span class="post-toc-number">1.0.1.</span> <span class="post-toc-text">为什么要说服务治理</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#单一应用的解决方案"><span class="post-toc-number">1.0.2.</span> <span class="post-toc-text">单一应用的解决方案</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#服务化"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">服务化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#特点"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">特点</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务化面临的挑战"><span class="post-toc-number">1.1.2.</span> <span class="post-toc-text">服务化面临的挑战</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#优雅的服务治理"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">优雅的服务治理</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务注册与发现"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">服务注册与发现</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务熔断"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">服务熔断</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务限流"><span class="post-toc-number">1.2.3.</span> <span class="post-toc-text">服务限流</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#配置中心"><span class="post-toc-number">1.2.4.</span> <span class="post-toc-text">配置中心</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#到底什么是分布式配置中心"><span class="post-toc-number">1.2.4.1.</span> <span class="post-toc-text">到底什么是分布式配置中心</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#官方链接"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">官方链接</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-20190722-microservices" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">怎样使用 PHP 实现微服务</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-07-26 11:57:02" datetime="2019-07-26T03:57:02.779Z" itemprop="datePublished">2019-07-26</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/MicroService/">MicroService</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="怎样使用-PHP-实现微服务"><a href="#怎样使用-PHP-实现微服务" class="headerlink" title="怎样使用 PHP 实现微服务"></a>怎样使用 PHP 实现微服务</h1><p><img src="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/mico.jpg" alt="Swoft"></p>
+<h3 id="为什么要说服务治理"><a href="#为什么要说服务治理" class="headerlink" title="为什么要说服务治理"></a>为什么要说服务治理</h3><p>   随着互联网浏览越来越大. 传统的 MVC 单一架构随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难.</p>
+<p>   我们必须采取措施,按应用拆分，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构的特点是应用之间各自独立 ，不相互调用。</p>
+<p>  多应用虽然解决了应用臃肿问题，但应用之间相互独立，有些共同的业务或代码无法复用。</p>
+<h3 id="单一应用的解决方案"><a href="#单一应用的解决方案" class="headerlink" title="单一应用的解决方案"></a>单一应用的解决方案</h3><p>   对于一个大型的互联网系统，一般会包含多个应用，而且应用之间往往还存在共同的业务，并且应用之间还存在调用关系。除此之外 ，对于大型的互联网系统还有一些其它的挑战，比如如何应对急剧增长的用户，如何管理好研发团队快速迭代产品研发，如何保持产品升级更加稳定等等 。</p>
+<p>   因此，为了使业务得到很好的复用，模块更加容易拓展和维护，我们希望业务与应用分离，某个业务不再属于一个应用，而是作为一个独立的服务单独进行维护。应用本身不再是一个臃肿的模块堆积，而是由一个个模块化的服务组件组合而成。</p>
+<h2 id="服务化"><a href="#服务化" class="headerlink" title="服务化"></a>服务化</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p>那么采用<code>服务化</code>给有那些亮点的特色呢 ?</p>
+<ul>
+<li>应用按业务拆分成服务</li>
+<li>各个服务均可独立部署</li>
+<li>服务可被多个应用共享</li>
+<li>服务之间可以通信</li>
+<li>架构上系统更加清晰</li>
+<li>核心模块稳定，以服务组件为单位进行升级，避免了频繁发布带来的风险</li>
+<li>开发管理方便</li>
+<li>单独团队维护、工作分明，职责清晰</li>
+<li>业务复用、代码复用</li>
+<li>非常容易拓展</li>
+</ul>
+<h3 id="服务化面临的挑战"><a href="#服务化面临的挑战" class="headerlink" title="服务化面临的挑战"></a>服务化面临的挑战</h3><p>系统服务化之后, 增加了依赖关系复杂, 也会增加服务与服务之间交互的次数. 在 <code>fpm</code> 的开发模式下.  因为无法常驻内存给我们带来了, 每一次请求都要从零开始加载到退出进程, 增加了很多无用的开销, 数据库连接无法复用也得不到保护, 由于<code>fpm</code>是以进程为单位的<code>fpm</code>的进程数也决定了并发数, 这也是是<code>fpm</code>开发简单给我们带来的问题. 所以说为什么现在互联网平台<code>Java</code>比较流行了，<code>.NET</code>和<code>PHP</code>在这方面都不行。<code>PHP非内存常驻</code>的就不用说了。除此之外，还有很多其他问题需要解决。</p>
+<ul>
+<li>服务越来越多，配置管理复杂</li>
+<li>服务间依赖关系复杂</li>
+<li>服务之间的负载均衡</li>
+<li>服务的拓展</li>
+<li>服务监控</li>
+<li>服务降级</li>
+<li>服务鉴权</li>
+<li>服务上线与下线</li>
+<li>服务文档<br>……</li>
+</ul>
+<p>你可以想象一下常驻内存给我们带来的好处 比如</p>
+<ul>
+<li><p><strong>只启动框架初始化</strong> 如果常驻内存我们只是在启动的时候处理化框架初始化在内存中,专心处理请求</p>
+</li>
+<li><p><strong>连接复用</strong>，有些工程师并不能特别理解，如果不用连接池，来一个请求就发一个连接怎么样？这样就会导致后端资源连接过多。对一些基础服务来说，比如 Redis，数据库，连接是个昂贵的消耗。</p>
+</li>
+</ul>
+<p>那么有没有好的方案呢？答案是有的，而且很多人都在用这个框架，它就是-<code>Swoft</code>。<code>Swoft</code>就是一个带有<code>服务治理</code>功能的<a href="https://en.swoft.org/docs/2.x/zh-CN/rpc-server/index.html" target="_blank" rel="noopener">RPC</a>框架。<code>Swoft</code>是首个 PHP常驻内存协程全栈框架, 基于 <code>Spring Boot</code>提出的约定大于配置的核心理念</p>
+<p><code>Swoft</code> 提供了类似 <code>Dubbo</code> 更为优雅的方式使用 <code>RPC</code> 服务, <code>Swoft</code> 性能是非常棒的有着类似<code>Golang</code>性能, 下面是我的<code>PC</code>对<code>Swoft</code> 性能的压测情况.</p>
+<p><img src="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/abTesting.png" alt="Swoft"></p>
+<p><code>ab</code>压力测试处理速度十分惊人, 在 <code>i78代</code>CPU, <code>16GB</code> 内存<code>下</code>100000<code>万个请求只用了</code>5s<code>时间在</code>fpm<code>开发模式下基本不可能达到. 这也足以证明</code>Swoft` 的高性能和稳定性,</p>
+<h2 id="优雅的服务治理"><a href="#优雅的服务治理" class="headerlink" title="优雅的服务治理"></a>优雅的服务治理</h2><h3 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a><a href="https://www.swoft.org/docs/2.x/zh-CN/ms/govern/register-discovery.html" target="_blank" rel="noopener">服务注册与发现</a></h3><p>微服务治理过程中，经常会涉及注册启动的服务到第三方集群，比如 consul / etcd 等等，本章以 Swoft 框架中使用 swoft-consul 组件，实现服务注册与发现为例。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/swoft-cloud/blog/master/image/registerProvider.png" alt="Swoft" title>
+                </div>
+                <div class="image-caption">Swoft</div>
+            </figure>
+<p>实现逻辑</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">declare</span>(strict_types=<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Common</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">ReflectionException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Bean</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Inject</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Exception</span>\<span class="title">ContainerException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Consul</span>\<span class="title">Agent</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Consul</span>\<span class="title">Exception</span>\<span class="title">ClientException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Consul</span>\<span class="title">Exception</span>\<span class="title">ServerException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Rpc</span>\<span class="title">Client</span>\<span class="title">Client</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Rpc</span>\<span class="title">Client</span>\<span class="title">Contract</span>\<span class="title">ProviderInterface</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class RpcProvider</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2.0</span></span><br><span class="line"><span class="comment"> *        </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Bean</span>()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RpcProvider</span> <span class="keyword">implements</span> <span class="title">ProviderInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Inject</span>()</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> Agent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $agent;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Client $client</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ReflectionException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ContainerException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ClientException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ServerException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@example</span></span></span><br><span class="line"><span class="comment">     * [</span></span><br><span class="line"><span class="comment">     *     'host:port',</span></span><br><span class="line"><span class="comment">     *     'host:port',</span></span><br><span class="line"><span class="comment">     *     'host:port',</span></span><br><span class="line"><span class="comment">     * ]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getList</span><span class="params">(Client $client)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// Get health service from consul</span></span><br><span class="line">        $services = <span class="keyword">$this</span>-&gt;agent-&gt;services();</span><br><span class="line"></span><br><span class="line">        $services = [</span><br><span class="line">        </span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $services;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="服务熔断"><a href="#服务熔断" class="headerlink" title="服务熔断"></a><a href="https://www.swoft.org/docs/2.x/zh-CN/ms/govern/breaker.html" target="_blank" rel="noopener">服务熔断</a></h3><p>在分布式环境下，特别是微服务结构的分布式系统中， 一个软件系统调用另外一个远程系统是非常普遍的。这种远程调用的被调用方可能是另外一个进程，或者是跨网路的另外一台主机, 这种远程的调用和进程的内部调用最大的区别是，远程调用可能会失败，或者挂起而没有任何回应，直到超时。更坏的情况是， 如果有多个调用者对同一个挂起的服务进行调用，那么就很有可能的是一个服务的超时等待迅速蔓延到整个分布式系统，引起连锁反应， 从而消耗掉整个分布式系统大量资源。最终可能导致系统瘫痪。</p>
+<p>断路器（Circuit Breaker）模式就是为了防止在分布式系统中出现这种瀑布似的连锁反应导致的灾难。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/swoft-cloud/swoft-doc/2.x/zh-CN/ms/govern/../../image/ms/breaker_ext.png" alt title>
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>基本的断路器模式下，保证了断路器在open状态时，保护supplier不会被调用， 但我们还需要额外的措施可以在supplier恢复服务后，可以重置断路器。一种可行的办法是断路器定期探测supplier的服务是否恢复， 一但恢复， 就将状态设置成close。断路器进行重试时的状态为半开（half-open）状态。</p>
+<p>熔断器的使用想到简单且功能强大，使用一个 <code>@Breaker</code> 注解即可，<code>Swoft</code> 的熔断器可以用于任何场景, 例如 服务调用的时候使用, 请求第三方的时候都可以对它进行熔断降级</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">declare</span>(strict_types=<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Model</span>\<span class="title">Logic</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Exception</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Bean</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Breaker</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Breaker</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class BreakerLogic</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2.0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Bean</span>()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BreakerLogic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Breaker</span>(fallback="loopFallback")</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> string</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">loop</span><span class="params">()</span>: <span class="title">string</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// Do something</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'Breaker exception'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> string</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">loopFallback</span><span class="params">()</span>: <span class="title">string</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// Do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="服务限流"><a href="#服务限流" class="headerlink" title="服务限流"></a><a href="https://www.swoft.org/docs/2.x/zh-CN/ms/govern/limiter.html" target="_blank" rel="noopener">服务限流</a></h3><p><strong>限流、熔断、降级</strong>这个强调多少遍都不过分，因为确实很重要。服务不行的时候一定要熔断。限流是一个保护自己最大的利器，如果没有自我保护机制，不管有多少连接都会接收，如果后端处理不过来，前端流量又很大的时候肯定就挂了。</p>
+<p>限流是对稀缺资源访问时，比如秒杀，抢购的商品时，来限制并发和请求的数量，从而有效的进行削峰并使得流量曲线平滑。限流的目的是对并发访问和并发请求进行限速，或者一个时间窗口内请求进行限速从而来保护系统，一旦达到或超过限制速率就可以拒绝服务，或者进行排队等待等。</p>
+<p><code>Swoft</code> 限流器底层采用的是令牌桶算法，底层依赖于 <code>Redis</code> 实现分布式限流。</p>
+<p>Swoft 限速器不仅可以限流控制器，也可以限制任何 bean 里面的方法，可以控制方法的访问速率。这里以下面使用示例详解</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">declare</span>(strict_types=<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Model</span>\<span class="title">Logic</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Bean</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Limiter</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">RateLimiter</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class LimiterLogic</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2.0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Bean</span>()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LimiterLogic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@RequestMapping</span>()</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@RateLimiter</span>(rate=20, fallback="limiterFallback")</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Request $request</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">requestLimiter2</span><span class="params">(Request $request)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $uri = $request-&gt;getUriPath();</span><br><span class="line">        <span class="keyword">return</span> [<span class="string">'requestLimiter2'</span>, $uri];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Request $request</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">limiterFallback</span><span class="params">(Request $request)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $uri = $request-&gt;getUriPath();</span><br><span class="line">        <span class="keyword">return</span> [<span class="string">'limiterFallback'</span>, $uri];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>key 这里支持 <code>symfony/expression-language</code> 表达式， 如果被限速会调用 <code>fallback</code>中定义的<code>limiterFallback</code> 方法</p>
+<h3 id="配置中心"><a href="#配置中心" class="headerlink" title="配置中心"></a><a href="https://www.swoft.org/docs/2.x/zh-CN/ms/govern/config.html" target="_blank" rel="noopener">配置中心</a></h3><p>说起配置中心前我们先说说配置文件，我们并不陌生，它提供我们可以动态修改程序运行能力。引用别人的一句话就是：</p>
+<blockquote>
+<p>系统运行时(runtime)飞行姿态的动态调整！</p>
+</blockquote>
+<p>我可以把我们的工作称之为在快速飞行的飞机上修理零件。我们人类总是无法掌控和预知一切。对于我们系统来说，我们总是需要预留一些控制线条，以便在我们需要的时候做出调整，控制系统方向（如灰度控制、限流调整），这对于拥抱变化的互联网行业尤为重要。</p>
+<p>对于单机版，我们称之为配置（文件）；对于分布式集群系统，我们称之为配置中心（系统）;</p>
+<h4 id="到底什么是分布式配置中心"><a href="#到底什么是分布式配置中心" class="headerlink" title="到底什么是分布式配置中心"></a>到底什么是分布式配置中心</h4><p>随着业务的发展、微服务架构的升级，服务的数量、程序的配置日益增多（各种微服务、各种服务器地址、各种参数），传统的配置文件方式和数据库的方式已无法满足开发人员对配置管理的要求：</p>
+<ul>
+<li>安全性：配置跟随源代码保存在代码库中，容易造成配置泄漏；</li>
+<li>时效性：修改配置，需要重启服务才能生效；</li>
+<li>局限性：无法支持动态调整：例如日志开关、功能开关；</li>
+</ul>
+<p>因此，我们需要配置中心来统一管理配置！把业务开发者从复杂以及繁琐的配置中解脱出来，只需专注于业务代码本身，从而能够显著提升开发以及运维效率。同时将配置和发布包解藕也进一步提升发布的成功率，并为运维的细力度管控、应急处理等提供强有力的支持。</p>
+<p> 关于分布式配置中心，网上已经有很多开源的解决方案，例如：</p>
+<p>Apollo是携程框架部门研发的分布式配置中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性，适用于微服务配置管理场景。</p>
+<p>本章以<code>Apollo</code> 为例，从远端配置中心拉取配置以及安全重启服务。如果对  <code>Apollo</code> 不熟悉，可以先看<code>Swoft</code> 扩展  <a href="https://www.swoft.org/docs/2.x/zh-CN/extra/apollo.html" target="_blank" rel="noopener"><code>Apollo</code></a> 组件以及阅读  <code>Apollo</code> 官方文档。</p>
+<p>本章以 <code>Swoft</code> 中使用 <code>Apollo</code> 为例，当  <code>Apollo</code> 配置变更后，重启服务(http-server / rpc-server/ ws-server)。如下是一个 agent 例子：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">declare</span>(strict_types=<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Model</span>\<span class="title">Logic</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Apollo</span>\<span class="title">Config</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Apollo</span>\<span class="title">Exception</span>\<span class="title">ApolloException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Bean</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Mapping</span>\<span class="title">Inject</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class ApolloLogic</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2.0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Bean</span>()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApolloLogic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Inject</span>()</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> Config</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $config;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ApolloException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">pull</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $data = <span class="keyword">$this</span>-&gt;config-&gt;pull(<span class="string">'application'</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Print data</span></span><br><span class="line">        var_dump($data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是一个简单的 Apollo 配置拉取，<a href="https://www.swoft.org/docs/2.x//zh-CN/extra/apollo.html" target="_blank" rel="noopener"><code>Swoft-Apollo</code></a>  除此方法外，还提供了更多的使用方法。</p>
+<h2 id="官方链接"><a href="#官方链接" class="headerlink" title="官方链接"></a>官方链接</h2><ul>
+<li><a href="https://github.com/swoft-cloud/swoft" target="_blank" rel="noopener">Github</a></li>
+<li><a href="https://en.swoft.org/docs" target="_blank" rel="noopener">Doc</a></li>
+<li><a href="https://gitter.im/swoft-cloud/community" target="_blank" rel="noopener">swoft-cloud/community</a></li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-07-26T03:57:02.779Z" itemprop="dateUpdated">2019-07-26 11:57:02</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2019/07/26/20190722-microservices/" target="_blank" rel="external">https://www.sakuraus.cn/2019/07/26/20190722-microservices/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MicroService/">MicroService</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoft/">Swoft</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/&title=《怎样使用 PHP 实现微服务》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/&title=《怎样使用 PHP 实现微服务》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2019/07/26/20190722-microservices/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《怎样使用 PHP 实现微服务》 — don't be evil&url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/05/05/docker-machine/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">docker-machine</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ovo 蟹蟹
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018 - 2019</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/&title=《怎样使用 PHP 实现微服务》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/&title=《怎样使用 PHP 实现微服务》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2019/07/26/20190722-microservices/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《怎样使用 PHP 实现微服务》 — don't be evil&url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2019/07/26/20190722-microservices/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACIklEQVR42u3awXLkIAwE0Pz/T3vPW6kh3chzsHmcUrFjeBwUJPHzE4/r15i///tp/v3NgYGB8VjGtRzrZd0Fy+f9OCMGBsYBjE8T5++sw2gbOdt5MTAwMNafTpa+/k0+FwYGBkYe+HLMOuCu38fAwMBok9g8Tc3faZPnG3JxDAyMBzImieW3f/5KfwMDA+NRjKsc+ReScv9kJf99EwMD49WMvWNfm5Qm4ElDFAMD492MpEC2V1Zrw/T6r/6AYWBgHMNoD4L500n7MwnfGBgYpzGSZmGSprZJbNLO/LgqDAyMAxh7gbVNU1tMsTUYGBivZuxdhtgrw+1dzrihqYmBgfFwRnvdau/NvQ3KgzgGBsY5jHnDsi2f3fVvAAMD4xxGW1Zri3R50T/ZoKJqiIGB8XBGXvrPw+I8ud3MxTEwMI5k7B3v8qdXMIoGJwYGxmGMSW8hb2pOynmj/cPAwHggI08+k8RyfhUjD7sYGBhnMtog+JUp4yCOgYFxDiMPl5ODY9tISFYSdTkwMDBeypgc75IQOb/qGgVcDAyMlzKSlLUNl20Y3QzcGBgYL2Vc5ciz4bYlMMpGMTAwXs2YH86S1LTdjr3jJgYGxrsZeZBtd6L98ujKBQYGxgGMPOHMm4vt0712JgYGBkbeHsjT4HaWiIqBgYFRXl3Nw+VdR0wMDIwTGHlpbF0ma3mToyQGBsY5jL3UcZKOtse+2xqZGBgYz2P8AyytDctck8lyAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<!-- <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '_(:зゝ∠)_！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '[]~(￣▽￣)~*!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
