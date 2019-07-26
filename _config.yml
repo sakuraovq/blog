@@ -80,5 +80,5 @@ theme: indigo
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:fanyinjiang/blog.git
+  repo: git@github.com:sakuraovq/blog.git
   branch: deploy
