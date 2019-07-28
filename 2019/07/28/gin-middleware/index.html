@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <link rel="canonical" href="https://sakuraus.cn/2019/07/28/gin-middleware/">
+    
+    
+    <title>Gin 之 Context Middleware | don&#39;t be evil | sakura ovq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#F8E0E6">
+    
+    
+    <meta name="keywords" content="golang,gin">
+    <meta name="description" content="简介最近在 使用 gin 简单分析了下 gin.context 中的源码, gin 的上下文 是对 golang 原生中的 context 扩展, gin 的上下文贯穿了请求的开始和结束全部内容(log…), 相关信息都在上下文中, 请求与请求之前上下文互不干扰. 今天主要学习下 context 中的 middleware. 简单介绍下 中间件吧 中间件中间件是用于控制 请求到达 和 响应请求 的">
+<meta name="keywords" content="golang,gin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gin 之 Context Middleware">
+<meta property="og:url" content="https://www.sakuraus.cn/2019/07/28/gin-middleware/index.html">
+<meta property="og:site_name" content="don&#39;t be evil">
+<meta property="og:description" content="简介最近在 使用 gin 简单分析了下 gin.context 中的源码, gin 的上下文 是对 golang 原生中的 context 扩展, gin 的上下文贯穿了请求的开始和结束全部内容(log…), 相关信息都在上下文中, 请求与请求之前上下文互不干扰. 今天主要学习下 context 中的 middleware. 简单介绍下 中间件吧 中间件中间件是用于控制 请求到达 和 响应请求 的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/sakuraovq/markdownImage/master/gin-middleware.png">
+<meta property="og:updated_time" content="2019-07-28T16:03:41.938Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gin 之 Context Middleware">
+<meta name="twitter:description" content="简介最近在 使用 gin 简单分析了下 gin.context 中的源码, gin 的上下文 是对 golang 原生中的 context 扩展, gin 的上下文贯穿了请求的开始和结束全部内容(log…), 相关信息都在上下文中, 请求与请求之前上下文互不干扰. 今天主要学习下 context 中的 middleware. 简单介绍下 中间件吧 中间件中间件是用于控制 请求到达 和 响应请求 的">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/sakuraovq/markdownImage/master/gin-middleware.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="don&#39;t be evil" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">sakura ovo</h5>
+          <a href="mailto:sakuraovq@gmail.com" title="sakuraovq@gmail.com" class="mail">sakuraovq@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-cloud"></i>
+                Index
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/sakuraovq" target="_blank">
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://ctexthuang.com" target="_blank">
+                <i class="icon icon-lg icon-star-half-o"></i>
+                Friend
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Gin 之 Context Middleware</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Gin 之 Context Middleware</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-07-27T16:00:00.000Z" itemprop="datePublished" class="page-time">
+  2019-07-28
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/golang/">golang</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#简介"><span class="post-toc-number">1.</span> <span class="post-toc-text">简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#中间件"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">中间件</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#gin-Deafult"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">gin.Deafult</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#gin-Next"><span class="post-toc-number">1.1.2.</span> <span class="post-toc-text">gin.Next()</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-gin-middleware" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Gin 之 Context Middleware</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-07-28 00:00:00" datetime="2019-07-27T16:00:00.000Z" itemprop="datePublished">2019-07-28</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/golang/">golang</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>最近在 使用 <code>gin</code> 简单分析了下 <code>gin.context</code> 中的源码, <code>gin</code> 的上下文 是对 <code>golang</code> 原生中的 <code>context</code> 扩展, <code>gin</code> 的上下文贯穿了请求的开始和结束<code>全部内容</code>(log…), 相关信息都在上下文中, 请求与请求之前上下文互不干扰.</p>
+<p>今天主要学习下 <code>context</code> 中的 <code>middleware</code>. 简单介绍下 中间件吧</p>
+<h2 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h2><p>中间件是用于控制 <code>请求到达</code> 和 <code>响应请求</code> 的整个流程的，通常用于对请求进行过滤验证处理，当你需要对请求或响应作出对应的修改或处理，或想调整请求处理的流程时均可以使用中间件来实现。</p>
+<h3 id="gin-Deafult"><a href="#gin-Deafult" class="headerlink" title="gin.Deafult"></a>gin.Deafult</h3><p>在 <code>gin</code> 中 <code>gin.Default</code> 方法可以快速生成一个 <code>gin app</code><br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Default returns an Engine instance with the Logger and Recovery middleware already attached.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Default</span><span class="params">()</span> *<span class="title">Engine</span></span> &#123;</span><br><span class="line">	debugPrintWARNINGDefault()</span><br><span class="line">	engine := New()</span><br><span class="line">	engine.Use(Logger(), Recovery())</span><br><span class="line">	<span class="keyword">return</span> engine</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在 <code>Default</code> 中我们看 <code>gin</code> 默认添加了 <code>Logger</code> 日志中间和<code>Recovery</code> <code>panic</code>捕捉中间件, 是通过 <code>Use</code> 引入的 参数是可变参数只要实现</p>
+<p>只要方法实现了 <code>type HandlerFunc func(*Context)</code> 类型即可, 这个 <code>context</code> 是<code>gin</code> 中的</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// HandlerFunc defines the handler used by gin middleware as return value.</span></span><br><span class="line"><span class="keyword">type</span> HandlerFunc <span class="function"><span class="keyword">func</span><span class="params">(*Context)</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="gin-Next"><a href="#gin-Next" class="headerlink" title="gin.Next()"></a>gin.Next()</h3><p>在 <code>gin</code> 中无论是 http handler 还是  middleware handler 其实都是同一种类型</p>
+<p> 它们都存储在 <code>[]HandlerFunc</code> 中 <code>HandlerFunc</code> 最多只能有 <code>63</code> 这是 gin <code>abortIndex</code>常量限制的</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 63</span></span><br><span class="line"><span class="keyword">const</span> abortIndex <span class="keyword">int8</span> = math.MaxInt8 / <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>中间件有非常中的两个概念 第一就是前置第二是后置</p>
+<p>加入你想要统计 整个处理请求的耗时时长 不利用中间件是很不方便实现的</p>
+<p>下面看来一个中间件如何实现 计算请求的耗时</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RequestCost</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">	<span class="comment">// Start timer</span></span><br><span class="line">	start := time.Now()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Process request</span></span><br><span class="line">	context.Next()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// End timer</span></span><br><span class="line">	end := time.Now()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Handler this request cost</span></span><br><span class="line">	cost := end.Sub(start)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一段简单的代码就实现了统计 是不是很神奇 在 <code>RequestCost</code> 方法中 <code>context.Next</code> 发挥了关键作用这是实现前缀和后置的<code>开关</code>,  所有中间件都有 <code>Request</code> 和 <code>Response</code>的分水岭, 就是这个 <code>context.Next()</code>, 否则没有办法传递中间件. 我们来看源码:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Next should be used only inside middleware.</span></span><br><span class="line"><span class="comment">// It executes the pending handlers in the chain inside the calling handler.</span></span><br><span class="line"><span class="comment">// See example in GitHub.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Next</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c.index++</span><br><span class="line">	<span class="keyword">for</span> c.index &lt; <span class="keyword">int8</span>(<span class="built_in">len</span>(c.handlers)) &#123;</span><br><span class="line">		c.handlers[c.index](c)</span><br><span class="line">		c.index++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果不调用<code>c.Next()</code> 就只有前置 这段代码 你可能看起来有点疑惑</p>
+<p>因为这是类似递归的方式实现 你可以先把 <code>c.handlers[c.index]</code> 看见一个中间件</p>
+<p>一个请求过来, Gin 会主动调用 <code>c.Next()</code> 一次. 因为 handlers 是 slice , 所以后来者中间件会追加到尾部. 这样就形成了形如 <code>RequestCost(RouterHanlder())</code> 的调用链.<br>路由<code>RouterHanlder</code> 被 中间件包裹起来了 这看起来像一个 <code>洋葱</code> 中间件是按照添加的顺序执行的最早注入的中间件被包裹在最外面 以此类推.</p>
+<p>善用中间件可以 有助于代码接耦 统计耗时只是一个简单的 demo</p>
+<p>我们用下面一张图来来总结这种关系:</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/sakuraovq/markdownImage/master/gin-middleware.png" alt title>
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-07-28T16:03:41.938Z" itemprop="dateUpdated">2019-07-29 00:03:41</time>
+</span><br>
+
+
+        
+        Nice to meet you 0w0 <a href="/2019/07/28/gin-middleware/" target="_blank" rel="external">https://www.sakuraus.cn/2019/07/28/gin-middleware/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="https://www.sakuraus.cn">
+            <img src="https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" alt="sakura ovo">
+            sakura ovo
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gin/">gin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2019/07/28/gin-middleware/&title=《Gin 之 Context Middleware》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2019/07/28/gin-middleware/&title=《Gin 之 Context Middleware》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2019/07/28/gin-middleware/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Gin 之 Context Middleware》 — don't be evil&url=https://www.sakuraus.cn/2019/07/28/gin-middleware/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2019/07/28/gin-middleware/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/07/26/20190722-microservices/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">怎样使用 PHP 实现微服务</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "lL7O28BzgbPhY6lbPAJEWjFS-gzGzoHsz",
+            appKey: "GyNNNYH0SI9Dlkigyp8i2Q8U",
+            avatar: "monsterid",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        ovo 蟹蟹
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>sakura ovo &copy; 2018 - 2019</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17038757号</a><br>
+                               
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://www.sakuraus.cn/2019/07/28/gin-middleware/&title=《Gin 之 Context Middleware》 — don't be evil&pic=https://avatars2.githubusercontent.com/u/30211214?s=460&v=4" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.sakuraus.cn/2019/07/28/gin-middleware/&title=《Gin 之 Context Middleware》 — don't be evil&source=phper | golanger | sakuraovq" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sakuraus.cn/2019/07/28/gin-middleware/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Gin 之 Context Middleware》 — don't be evil&url=https://www.sakuraus.cn/2019/07/28/gin-middleware/&via=https://www.sakuraus.cn" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://www.sakuraus.cn/2019/07/28/gin-middleware/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACLElEQVR42u3asZLDIAwE0Pv/n/a1aeLsCrswflSZxAGeC41A+vuLx/Exrn3+85l2lXpgYGA8lnGcjm8LtIt9m/n812RvGBgY72EkofD8mati/2xdDAwMjG/bTZ4/D7L5ZwwMDIxZ4DsPtck3yQwYGBgY+SE2P3AmaV+y9VvO4hgYGA9krBws7/58S30DAwPjUYyjHO2lfz7bsTAwMDD2ZqwcUFcu3RJMvR8MDIwXMNpQ2Ibaq0oIl3VzYGBgPJCR/KFtHbu2VPljLQwMjE0Z7WEyTwqTcJxsOiphYmBgbM1YL0+2l2LtFV6RyGJgYGzKmAXWtoVrvWls2C2CgYGxBSO/lM8TuyQdbEukeTKKgYGxKyNZchY6ry2RRreGGBgY2zHyv7WbaAPoyuUdBgbG3oz8Xj1JHGcJX/6a6kcxMDC2YLQFyzwdbJO/tlQQFQYwMDC2YCRbbIsHbcK3nphiYGDszZgdI5PyQJu5taVTDAyM9zBmR9mrrsza0J/MgIGBsStjFjpngXIlTP94cRgYGC9jJGlc20Ixu4wrSgUYGBgvY7RTzEqVK61jUecIBgbGFoyjHO3xddZ4MUwKMTAwNmXMypwJLDn0rhREh21nGBgYj2XcV2Jcmbl+3xgYGC9g5IfM9SbXtvk1SkkxMDAwyraJNkG8IIfFwMDAGDVVJAfU/EX8mB8DA+MFjFmDxSytzC/yiiYzDAyMrRnrDRaz5ZNGsauOvhgYGI9l/AMMBTaUBtDsQQAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<!-- <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '_(:зゝ∠)_！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '[]~(￣▽￣)~*!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
